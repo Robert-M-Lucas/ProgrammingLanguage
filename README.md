@@ -8,8 +8,8 @@ Fomatting:
 
 Examples:
 
-```
-import | math.rlc;
+```rlc
+import | math;
 print | 1;
 tag | a;
 goto | a;
