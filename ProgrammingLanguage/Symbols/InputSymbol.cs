@@ -6,25 +6,24 @@ using System.Threading.Tasks;
 
 namespace ProgrammingLanguage.Symbols
 {
-    internal class SetSymbol : Symbol
+    internal class InputSymbol : Symbol
     {
         int ObjectIndex;
-        int Constant;
 
-        public string GetName() => "set";
+        public string GetName() => "input";
         public string? Build(Argument[] arguments)
         {
-            if (!Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object, ArgumentType.Constant })) return "Arguments incorrectly formatted";
+            if (!Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object })) return "Arguments incorrectly formatted";
 
             ObjectIndex = arguments[0].Value;
-            Constant = arguments[1].Value;
 
             return null;
         }
 
         public void Run(Interpreter interpreter, SymbolTable symbolTable)
         {
-            symbolTable.UnpackedObjects[ObjectIndex] = Constant;
+            Console.Write("> ");
+            symbolTable.UnpackedObjects[ObjectIndex] = new Argument(Console.ReadLine()??Convert.ToChar(0).ToString(), null, 0, null).Value;
             interpreter.SymbolID += 1;
         }
     }

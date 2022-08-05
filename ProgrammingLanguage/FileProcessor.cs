@@ -40,10 +40,10 @@ namespace ProgrammingLanguage
             }
         }
 
-        public void ProcessFile(string file_path, string calling_path)
+        public int ProcessFile(string file_path, string calling_path)
         {
             if (Path.GetDirectoryName(file_path) == string.Empty) { file_path = Path.Join(Path.GetDirectoryName(calling_path), file_path); }
-            string file_name = Path.GetFileNameWithoutExtension(file_path);
+            string file_name = Path.GetFileName(file_path);
 
             if (pastFiles.Contains(file_path))
             {
@@ -83,8 +83,7 @@ namespace ProgrammingLanguage
                 file_split = file_split.SkipLast(1).ToArray();
             }
 
-            Dictionary<string, int> object_names = new Dictionary<string, int>();
-            Dictionary<string, int> symbol_names = new Dictionary<string, int>();
+            Dictionary<string, int> TempFileNames = new Dictionary<string, int>();
 
             List<int> completed_lines = new List<int>();
 
@@ -113,9 +112,10 @@ namespace ProgrammingLanguage
                         {
                             if (Path.GetDirectoryName(line[1]) == string.Empty)
                             {
-                                line[1] = Path.Join(Path.GetDirectoryName(file_path), line[1]);
+                                line[1] = Path.Join(Path.GetDirectoryName(file_path), line[1]) + ".rlc";
                             }
-                            ProcessFile(line[1], file_path);
+                            int tableID = ProcessFile(line[1], file_path);
+                            TempFileNames.Add(Path.GetFileNameWithoutExtension(line[1]), tableID);
                             completed_lines.Add(line_no);
                         }
                         else { break; }
@@ -126,12 +126,12 @@ namespace ProgrammingLanguage
                         if (command == "import") throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1}] - Import commands must be at the top of the file");
                         else if (command == "let") 
                         {
-                            if (symbol_names.ContainsKey(line[1]) || object_names.ContainsKey(line[1]))
+                            if (SymbolTables[current_symbol_table].TempSymbolNames.ContainsKey(line[1]) || SymbolTables[current_symbol_table].TempObjectNames.ContainsKey(line[1]))
                             {
                                 throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1}] - Name '{line[1]}' already exists");
                             }
-                            object_names[line[1]] = SymbolTables[current_symbol_table].Objects.Count;
-                            try { SymbolTables[current_symbol_table].Objects.Add(int.Parse(line[2])); } 
+                            SymbolTables[current_symbol_table].TempObjectNames[line[1]] = SymbolTables[current_symbol_table].UnpackedObjects.Count;
+                            try { SymbolTables[current_symbol_table].UnpackedObjects.Add(new Argument(line[2], null, 0, null).Value); } 
                             catch (FormatException) { throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1}] - Variable value incorrectly formatted");  }
                             
                             completed_lines.Add(line_no);
@@ -147,11 +147,11 @@ namespace ProgrammingLanguage
                         else if (command == "let") throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1} - Variable declatarions must be at the top of the file below imports]");
                         else if (command == "tag")
                         {
-                            if (symbol_names.ContainsKey(line[1]) || object_names.ContainsKey(line[1]))
+                            if (SymbolTables[current_symbol_table].TempSymbolNames.ContainsKey(line[1]) || SymbolTables[current_symbol_table].TempObjectNames.ContainsKey(line[1]))
                             {
                                 throw new ProcessingException($"Error processing '{file_path}' - Name '{line[1]}' already exists [{line_no+1}]");
                             }
-                            symbol_names[line[1]] = line_no - meta_lines_passed;
+                            SymbolTables[current_symbol_table].TempSymbolNames[line[1]] = line_no - meta_lines_passed;
                             meta_lines_passed++;
                             completed_lines.Add(line_no);
                         }
@@ -170,7 +170,7 @@ namespace ProgrammingLanguage
 
                             for (int i = 0; i < arguments.Length; i++)
                             {
-                                arguments[i] = new Argument(line[i+1], object_names, symbol_names);
+                                arguments[i] = new Argument(line[i+1], SymbolTables, current_symbol_table, TempFileNames);
                             }
                             
                             string? error = symbol.Build(arguments);
@@ -187,6 +187,8 @@ namespace ProgrammingLanguage
                     SymbolTables[current_symbol_table].Symbols = new Symbol[file_split.Length - meta_lines_passed];
                 }
             }
+
+            return current_symbol_table;
         }
     }
 }

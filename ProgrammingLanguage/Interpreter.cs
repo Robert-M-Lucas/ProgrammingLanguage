@@ -11,6 +11,8 @@ namespace ProgrammingLanguage
 
     internal class Interpreter
     {
+        public static StreamWriter ConsoleWriter = new StreamWriter(Console.OpenStandardOutput(), Encoding.UTF8, 8192);
+
         string? baseFilePath;
 
         List<SymbolTable>? symbolTables;
@@ -48,10 +50,35 @@ namespace ProgrammingLanguage
             
         }
 
+        public static void Print(int message)
+        {
+            ConsoleWriter.Write(message);
+        }
+
+        public static void Print(string message)
+        {
+            ConsoleWriter.Write(message);
+        }
+
+        public static void PrintLine(int message)
+        {
+            ConsoleWriter.Write(message + "\n");
+        }
+
+        public static void PrintLine(string message)
+        {
+            ConsoleWriter.Write(message + "\n");
+        }
+
         public void CancelHandler(object sender, ConsoleCancelEventArgs args)
         {
             args.Cancel = true;
             force_running = false;
+        }
+
+        public void PushHierachy()
+        {
+            tableHierachy.Add(new Tuple<int, int>(SymbolTableID, SymbolID));
         }
 
         public void Run()
@@ -76,6 +103,7 @@ namespace ProgrammingLanguage
                 {
                     SymbolID = tableHierachy[tableHierachy.Count - 1].Item2;
                     SymbolTableID = tableHierachy[tableHierachy.Count - 1].Item1;
+                    tableHierachy.RemoveAt(tableHierachy.Count - 1);
                 }
                 else
                 {

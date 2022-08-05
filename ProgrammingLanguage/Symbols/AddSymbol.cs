@@ -27,8 +27,8 @@ namespace ProgrammingLanguage.Symbols
         {
             if (CompareTo is not null)
             {
-                if (CompareTo.Type == ArgumentType.Constant) { symbolTable.Objects[ObjectIndex] += CompareTo.Value; }
-                else if (CompareTo.Type == ArgumentType.Object) { symbolTable.Objects[ObjectIndex] += symbolTable.Objects[CompareTo.Value]; }
+                if (CompareTo.Type == ArgumentType.Constant) { symbolTable.UnpackedObjects[ObjectIndex] += CompareTo.Value; }
+                else if (CompareTo.Type == ArgumentType.Object) { symbolTable.UnpackedObjects[ObjectIndex] += symbolTable.UnpackedObjects[CompareTo.Value]; }
             }
             interpreter.SymbolID++;
         }

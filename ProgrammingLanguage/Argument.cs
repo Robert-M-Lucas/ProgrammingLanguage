@@ -9,31 +9,47 @@ namespace ProgrammingLanguage
     internal enum ArgumentType {
         Constant = 0,
         Object = 1,
-        Symbol = 2
+        Symbol = 2,
+        ExternalSymbol = 3,
     }
 
     internal class Argument
     {
         public int Value;
+        public int Value2;
 
         public ArgumentType Type;
 
-        public Argument(string input, Dictionary<string, int> object_names, Dictionary<string, int> symbol_names)
+        public Argument(string input, List<SymbolTable>? symbolTables, int current_table, Dictionary<string, int>? file_names)
         {
-            if (object_names.ContainsKey(input))
+            if (symbolTables is not null && symbolTables[current_table].TempObjectNames.ContainsKey(input))
             {
                 Type = ArgumentType.Object;
-                Value = object_names[input];
+                Value = symbolTables[current_table].TempObjectNames[input];
             }
-            else if (symbol_names.ContainsKey(input))
+            else if (symbolTables is not null && symbolTables[current_table].TempSymbolNames.ContainsKey(input))
             {
                 Type = ArgumentType.Symbol;
-                Value = symbol_names[input];
+                Value = symbolTables[current_table].TempSymbolNames[input];
+            }
+            else if (symbolTables is not null && file_names is not null && input.Contains('.'))
+            {
+                string[] path = input.Split('.');
+                Value2 = file_names[path[0]];
+                Value = symbolTables[Value2].TempSymbolNames[path[1]];
+                Type = ArgumentType.ExternalSymbol;
             }
             else
             {
                 Type = ArgumentType.Constant;
-                Value = int.Parse(input);
+
+                if (!int.TryParse(input, out Value))
+                {
+                    if (input.Length == 1)
+                    {
+                        Value = input[0];
+                    }
+                }
             }
         }
 

@@ -1,0 +1,9 @@
+let | temp | r;
+tag | printrobert;
+add | temp | -32;
+printc | temp | 1;
+printc | o | 1;
+printc | b | 1;
+printc | e | 1;
+printc | r | 1;
+printc | t;
