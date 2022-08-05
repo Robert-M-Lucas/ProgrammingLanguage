@@ -42,6 +42,7 @@ namespace ProgrammingLanguage
 
         public int ProcessFile(string file_path, string calling_path)
         {
+            Console.WriteLine(file_path);
             if (Path.GetDirectoryName(file_path) == string.Empty) { file_path = Path.Join(Path.GetDirectoryName(calling_path), file_path); }
             string file_name = Path.GetFileName(file_path);
 
@@ -170,7 +171,14 @@ namespace ProgrammingLanguage
 
                             for (int i = 0; i < arguments.Length; i++)
                             {
-                                arguments[i] = new Argument(line[i+1], SymbolTables, current_symbol_table, TempFileNames);
+                                try
+                                {
+                                    arguments[i] = new Argument(line[i + 1], SymbolTables, current_symbol_table, TempFileNames);
+                                }
+                                catch (ProcessingException e)
+                                {
+                                    throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1}] - {e.Message}");
+                                }
                             }
                             
                             string? error = symbol.Build(arguments);

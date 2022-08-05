@@ -35,8 +35,23 @@ namespace ProgrammingLanguage
             else if (symbolTables is not null && file_names is not null && input.Contains('.'))
             {
                 string[] path = input.Split('.');
-                Value2 = file_names[path[0]];
-                Value = symbolTables[Value2].TempSymbolNames[path[1]];
+                try
+                {
+                    Value2 = file_names[path[0]];
+                }
+                catch (KeyNotFoundException)
+                {
+                    throw new ProcessingException($"File {path[0]} not found");
+                }
+                
+                try
+                {
+                    Value = symbolTables[Value2].TempSymbolNames[path[1]];
+                }
+                catch (KeyNotFoundException)
+                {
+                    throw new ProcessingException($"Tag {path[1]} not found");
+                }
                 Type = ArgumentType.ExternalSymbol;
             }
             else

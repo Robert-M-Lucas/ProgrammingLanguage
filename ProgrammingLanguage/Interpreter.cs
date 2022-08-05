@@ -111,6 +111,7 @@ namespace ProgrammingLanguage
                 }
             }
             s.Stop();
+            ConsoleWriter.Flush();
 
             if (force_running) Console.WriteLine("> Program finished excecution");
             else Console.WriteLine("> Program terminated");

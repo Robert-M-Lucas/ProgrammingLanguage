@@ -2,6 +2,10 @@
 
 ## General info
 
+Running:
+
+To run a program run the exe with the first argument being the main file. All files must end in `.rlc`. Currently to ensure stability make sure the code files are in the same folder as the excecutable
+
 Fomatting:
 
 ``` [Symbol] | [arg1] | [arg2] | [...]; ```
@@ -10,9 +14,17 @@ Examples:
 
 ```rlc
 import | math;
-print | 1;
-tag | a;
-goto | a;
+let | i | 0;
+
+tag | loop;
+    goto | math.count;
+    add | i | 1;
+    compare | i | 100 | end;
+    goto | loop;
+
+
+tag | end;
+    exit;
 ```
 
 - All whitespace and newlines are removed on processing as well as everythin being converted to lowercase
