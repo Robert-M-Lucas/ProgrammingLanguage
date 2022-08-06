@@ -12,8 +12,8 @@ namespace ProgrammingLanguage
 
         public Symbol[] Symbols = new Symbol[0];
 
-        public Dictionary<string, int> TempObjectNames = new Dictionary<string, int>();
-        public Dictionary<string, int> TempSymbolNames = new Dictionary<string, int>();
+        public Dictionary<string, int>? TempObjectNames = new Dictionary<string, int>();
+        public Dictionary<string, int>? TempSymbolNames = new Dictionary<string, int>();
 
         public void Excecute(int symbolID, Interpreter interpreter)
         {

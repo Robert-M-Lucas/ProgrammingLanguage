@@ -28,6 +28,7 @@ namespace ProgrammingLanguage
         {
             BuildSymbolDictionary();
             ProcessFile(base_file_path, "base");
+            Cleanup();
         }
 
         public void BuildSymbolDictionary()
@@ -37,6 +38,15 @@ namespace ProgrammingLanguage
             {
                 Symbol symbol = (Symbol)(Activator.CreateInstance(mytype) ?? throw new NullReferenceException());
                 SymbolNames[symbol.GetName()] = symbol.GetType();
+            }
+        }
+
+        public void Cleanup()
+        {
+            foreach (SymbolTable symbolTable in SymbolTables)
+            {
+                symbolTable.TempObjectNames = null;
+                symbolTable.TempSymbolNames = null;
             }
         }
 
