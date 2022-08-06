@@ -2,7 +2,7 @@
   "profiles": {
     "ProgrammingLanguage": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\rober\\Documents\\C# projects\\ProgrammingLanguage\\ProgrammingLanguage\\code.rlc\""
+      "commandLineArgs": "\"C:\\Users\\rober\\Source\\Repos\\Robert-M-Lucas\\ProgrammingLanguage\\ProgrammingLanguage\\code.rlc\""
     }
   }
 }

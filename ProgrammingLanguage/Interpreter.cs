@@ -85,6 +85,8 @@ namespace ProgrammingLanguage
         {
             if (symbolTables is null) { Console.WriteLine("> No symbol table"); return; }
 
+            ConsoleWriter.Flush();
+
             Stopwatch s = new Stopwatch();
             s.Start();
             Console.WriteLine("> Excecuting");
@@ -95,7 +97,15 @@ namespace ProgrammingLanguage
                 {
                     // Console.WriteLine(SymbolID);
                     if (!force_running || !running) break;
-                    symbolTables[SymbolTableID].Excecute(SymbolID, this);
+                    try
+                    {
+                        symbolTables[SymbolTableID].Excecute(SymbolID, this);
+                    }
+                    catch (Exception e)
+                    {
+                        force_running = false;
+                        Console.WriteLine($"Runtime {e.GetType()} - [{SymbolID}:{SymbolTableID}]");
+                    }
                 }
                 if (!force_running || !running) break;
 
@@ -110,6 +120,7 @@ namespace ProgrammingLanguage
                     break;
                 }
             }
+
             s.Stop();
             ConsoleWriter.Flush();
 

@@ -1,0 +1,13 @@
+import | math;
+let | i | 0;
+
+tag | loop;
+    goto | math.count;
+    print | i;
+    add | i | 1;
+    compare | i | 100 | end;
+    goto | loop;
+
+
+tag | end;
+    exit;

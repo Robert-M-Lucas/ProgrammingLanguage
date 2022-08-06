@@ -9,6 +9,7 @@ namespace ProgrammingLanguage
     internal class SymbolTable
     {
         public List<int> UnpackedObjects = new List<int>();
+        public int[] Objects;
 
         public Symbol[] Symbols = new Symbol[0];
 

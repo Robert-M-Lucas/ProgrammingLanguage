@@ -7,6 +7,35 @@ using System.IO;
 
 namespace ProgrammingLanguage
 {
+    internal enum ProcessingExceptionType
+    {
+        ImportError = 1,
+        ProcessingError = 2
+    }
+
+    internal static class ProcessingExceptionBuilder
+    {
+        public static ProcessingException Build(ProcessingExceptionType type, FileProcessor fileProcessor, string exceptionMessage)
+        {
+            string exception_string = "";
+            for (int i = 0; i < fileProcessor.call_stack.Count; i++)
+            {
+                exception_string += $"In '{fileProcessor.call_stack[i]}' [{fileProcessor.line_no[i]}]\n";
+            }
+            switch (type)
+            {
+                case ProcessingExceptionType.ImportError:
+                    exception_string += "Import Error";
+                    break;
+                case ProcessingExceptionType.ProcessingError:
+                    exception_string += "Processing Error";
+                    break;
+            }
+            exception_string += ": " + exceptionMessage;
+            return new ProcessingException(exception_string);
+        }
+    }
+
     internal class ProcessingException : Exception
     {
         public ProcessingException() { }
@@ -18,6 +47,9 @@ namespace ProgrammingLanguage
 
     internal class FileProcessor
     {
+        public List<string> call_stack = new List<string>();
+        public List<int> line_no = new List<int>();
+
         public List<SymbolTable> SymbolTables = new List<SymbolTable>();
         Dictionary<string, int> FileNames = new Dictionary<string, int>();
         List<string> pastFiles = new List<string>();
@@ -44,15 +76,17 @@ namespace ProgrammingLanguage
         {
             Console.WriteLine(file_path);
             if (Path.GetDirectoryName(file_path) == string.Empty) { file_path = Path.Join(Path.GetDirectoryName(calling_path), file_path); }
+            call_stack.Add(file_path);
+            line_no.Add(0);
             string file_name = Path.GetFileName(file_path);
 
             if (pastFiles.Contains(file_path))
             {
-                throw new ProcessingException($"Circular import in '{calling_path}' trying to import '{file_path}'");
+                throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ImportError, this, $"Circular import in '{calling_path}' trying to import '{file_path}'");
             }
             else if (pastFileNames.Contains(file_name))
             {
-                throw new ProcessingException($"Error importing '{file_path}' - name already used");
+                throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ImportError, this, $"Error importing '{file_path}' - name already used");
             }
 
             pastFiles.Add(file_path);
@@ -89,15 +123,15 @@ namespace ProgrammingLanguage
             List<int> completed_lines = new List<int>();
 
             for (int pass = -1; pass <= 3; pass++) {
-                int line_no = -1;
+                line_no[line_no.Count - 1] = -1;
                 int meta_lines_passed = 0;
 
-                while (line_no < file_split.Length - 1) 
+                while (line_no[line_no.Count - 1] < file_split.Length - 1) 
                 {
-                    line_no++;
+                    line_no[line_no.Count - 1]++;
 
-                    if (completed_lines.Contains(line_no)) { meta_lines_passed++; continue; }
-                    string[] line = file_split[line_no].Split('|');
+                    if (completed_lines.Contains(line_no[line_no.Count - 1])) { meta_lines_passed++; continue; }
+                    string[] line = file_split[line_no[line_no.Count - 1]].Split('|');
                     string command = line[0];
 
                     // Meta count phase
@@ -117,25 +151,25 @@ namespace ProgrammingLanguage
                             }
                             int tableID = ProcessFile(line[1], file_path);
                             TempFileNames.Add(Path.GetFileNameWithoutExtension(line[1]), tableID);
-                            completed_lines.Add(line_no);
+                            completed_lines.Add(line_no[line_no.Count - 1]);
                         }
                         else { break; }
                     }
                     // Variable declaration phase
                     else if (pass == 1)
                     {
-                        if (command == "import") throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1}] - Import commands must be at the top of the file");
+                        if (command == "import") throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Import commands must be at the top of the file");
                         else if (command == "let") 
                         {
                             if (SymbolTables[current_symbol_table].TempSymbolNames.ContainsKey(line[1]) || SymbolTables[current_symbol_table].TempObjectNames.ContainsKey(line[1]))
                             {
-                                throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1}] - Name '{line[1]}' already exists");
+                                throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Name '{line[1]}' already exists");
                             }
                             SymbolTables[current_symbol_table].TempObjectNames[line[1]] = SymbolTables[current_symbol_table].UnpackedObjects.Count;
                             try { SymbolTables[current_symbol_table].UnpackedObjects.Add(new Argument(line[2], null, 0, null).Value); } 
-                            catch (FormatException) { throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1}] - Variable value incorrectly formatted");  }
+                            catch (FormatException) { throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Variable value incorrectly formatted");  }
                             
-                            completed_lines.Add(line_no);
+                            completed_lines.Add(line_no[line_no.Count - 1]);
                         }
                         else {
                             break;
@@ -144,27 +178,27 @@ namespace ProgrammingLanguage
                     // Tag phase
                     else if (pass == 2)
                     {
-                        if (command == "import") throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1}] - Import commands must be at the top of the file");
-                        else if (command == "let") throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1} - Variable declatarions must be at the top of the file below imports]");
+                        if (command == "import") throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Import commands must be at the top of the file");
+                        else if (command == "let") throw new ProcessingException($"Error processing '{file_path}' [{line_no[line_no.Count - 1] + 1} - Variable declatarions must be at the top of the file below imports]");
                         else if (command == "tag")
                         {
                             if (SymbolTables[current_symbol_table].TempSymbolNames.ContainsKey(line[1]) || SymbolTables[current_symbol_table].TempObjectNames.ContainsKey(line[1]))
                             {
-                                throw new ProcessingException($"Error processing '{file_path}' - Name '{line[1]}' already exists [{line_no+1}]");
+                                throw new ProcessingException($"Error processing '{file_path}' - Name '{line[1]}' already exists [{line_no[line_no.Count - 1] + 1}]");
                             }
-                            SymbolTables[current_symbol_table].TempSymbolNames[line[1]] = line_no - meta_lines_passed;
+                            SymbolTables[current_symbol_table].TempSymbolNames[line[1]] = line_no[line_no.Count - 1] - meta_lines_passed;
                             meta_lines_passed++;
-                            completed_lines.Add(line_no);
+                            completed_lines.Add(line_no[line_no.Count - 1]);
                         }
                     }
                     // Generic phase
                     else
                     {
-                        if (command == "import") throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1}] - Import commands must be at the top of the file");
-                        else if (command == "let") throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1}] - Variable declatarions must be at the top of the file below imports");
+                        if (command == "import") throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Import commands must be at the top of the file");
+                        else if (command == "let") throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Variable declatarions must be at the top of the file below imports");
                         else 
                         {
-                            if (!SymbolNames.ContainsKey(command)) throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1}] - Symbol '{command}' not found");
+                            if (!SymbolNames.ContainsKey(command)) throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, $"Symbol '{command}' not found");
 
                             Symbol symbol = (Symbol)(Activator.CreateInstance(SymbolNames[command]) ?? throw new NullReferenceException());
                             Argument[] arguments = new Argument[line.Length-1];
@@ -177,13 +211,13 @@ namespace ProgrammingLanguage
                                 }
                                 catch (ProcessingException e)
                                 {
-                                    throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1}] - {e.Message}");
+                                    throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "{e.Message}");
                                 }
                             }
                             
                             string? error = symbol.Build(arguments);
-                            if (error is not null) throw new ProcessingException($"Error processing '{file_path}' [{line_no + 1}] '{command}' - Error processing symbol: {error}");
-                            SymbolTables[current_symbol_table].Symbols[line_no-meta_lines_passed] = symbol;
+                            if (error is not null) throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, $"Error processing symbol {command}: {error}");
+                            SymbolTables[current_symbol_table].Symbols[line_no[line_no.Count - 1] - meta_lines_passed] = symbol;
                         }
                     }
                 }
@@ -196,6 +230,8 @@ namespace ProgrammingLanguage
                 }
             }
 
+            call_stack.RemoveAt(call_stack.Count-1);
+            line_no.RemoveAt(line_no.Count-1);
             return current_symbol_table;
         }
     }
