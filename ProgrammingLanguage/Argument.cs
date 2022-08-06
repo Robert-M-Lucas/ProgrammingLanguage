@@ -16,7 +16,7 @@ namespace ProgrammingLanguage
     internal class Argument
     {
         public int Value;
-        public int Value2;
+        public int Value2 = -1;
 
         public ArgumentType Type;
 
@@ -44,13 +44,20 @@ namespace ProgrammingLanguage
                     throw new ProcessingException($"File {path[0]} not found");
                 }
                 
-                try
+                if (path[1] == "start")
                 {
-                    Value = symbolTables[Value2].TempSymbolNames[path[1]];
+                    Value = 0;
                 }
-                catch (KeyNotFoundException)
+                else
                 {
-                    throw new ProcessingException($"Tag {path[1]} not found");
+                    try
+                    {
+                        Value = symbolTables[Value2].TempSymbolNames[path[1]];
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        throw new ProcessingException($"Tag {path[1]} not found");
+                    }
                 }
                 Type = ArgumentType.ExternalSymbol;
             }

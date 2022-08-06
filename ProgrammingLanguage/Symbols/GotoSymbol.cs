@@ -33,6 +33,7 @@ namespace ProgrammingLanguage.Symbols
                 interpreter.SymbolTableID = tableAddress;
             }
 
+
             interpreter.SymbolID = symbolAddress;
         }
     }

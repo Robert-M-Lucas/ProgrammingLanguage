@@ -1,12 +1,13 @@
-import | math;
-let | i | 0;
+﻿let | random | 112;
+let | guess | 0;
 
-tag | loop;
-    goto | math.count;
-    add | i | 1;
-    compare | i | 100 | end;
-    goto | loop;
+tag | restart;
+	printc | g | 1;
+	printc | u | 1;
+	printc | e | 1;
+	printc | s | 1;
+	printc | s | 1;
+	printc | : | 1;
+	input | guess;
 
-
-tag | end;
-    exit;
+	greater | guess | random | greater_tag;

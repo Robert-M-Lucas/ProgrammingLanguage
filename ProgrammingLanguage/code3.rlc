@@ -1,8 +1,7 @@
-﻿let | count | 0;
-
-goto | d;
+﻿goto | d;
 tag | d;
 print | 1;
 print | 1;
 print | 1;
 print | 1;
+exit;
