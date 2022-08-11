@@ -24,7 +24,7 @@ namespace ProgrammingLanguage.Symbols
 
         public void Run(Interpreter interpreter, SymbolTable symbolTable)
         {
-            if (symbolTable.UnpackedObjects[ObjectIndex] == 1) { interpreter.SymbolID = SymbolIndex; }
+            if (symbolTable.Objects[ObjectIndex] == 1) { interpreter.SymbolID = SymbolIndex; }
             else { interpreter.SymbolID++; }
         }
     }

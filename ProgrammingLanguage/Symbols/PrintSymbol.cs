@@ -36,12 +36,12 @@ namespace ProgrammingLanguage.Symbols
             if (new_line)
             {
                 if (printValue.Type == ArgumentType.Constant) Interpreter.PrintLine(printValue.Value);
-                else Interpreter.PrintLine(symbolTable.UnpackedObjects[printValue.Value]);
+                else Interpreter.PrintLine(symbolTable.Objects[printValue.Value]);
             }
             else
             {
                 if (printValue.Type == ArgumentType.Constant) Interpreter.Print(printValue.Value);
-                else Interpreter.Print(symbolTable.UnpackedObjects[printValue.Value]);
+                else Interpreter.Print(symbolTable.Objects[printValue.Value]);
             }
             interpreter.SymbolID += 1;
         }

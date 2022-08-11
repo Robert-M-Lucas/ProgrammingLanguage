@@ -37,12 +37,12 @@ namespace ProgrammingLanguage.Symbols
             if (new_line)
             {
                 if (printValue.Type == ArgumentType.Constant) Interpreter.PrintLine(Convert.ToChar(printValue.Value).ToString());
-                else Interpreter.PrintLine(Convert.ToChar(symbolTable.UnpackedObjects[printValue.Value]).ToString());
+                else Interpreter.PrintLine(Convert.ToChar(symbolTable.Objects[printValue.Value]).ToString());
             }
             else
             {
                 if (printValue.Type == ArgumentType.Constant) Interpreter.Print(Convert.ToChar(printValue.Value).ToString());
-                else Interpreter.Print(Convert.ToChar(symbolTable.UnpackedObjects[printValue.Value]).ToString());
+                else Interpreter.Print(Convert.ToChar(symbolTable.Objects[printValue.Value]).ToString());
             }
             interpreter.SymbolID += 1;
         }

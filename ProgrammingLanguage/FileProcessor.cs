@@ -79,6 +79,8 @@ namespace ProgrammingLanguage
             {
                 symbolTable.TempObjectNames = null;
                 symbolTable.TempSymbolNames = null;
+                symbolTable.Objects = symbolTable.UnpackedObjects.ToArray();
+                symbolTable.UnpackedObjects = null;
             }
         }
 
@@ -114,6 +116,7 @@ namespace ProgrammingLanguage
                 file_string = File.ReadAllText(file_path);
                 file_string = file_string.Replace("\n", "");
                 file_string = file_string.Replace("\r", "");
+                file_string = file_string.Replace("\t", "");
                 file_string = file_string.Replace(" ", "");
                 file_string = file_string.ToLower();
             }

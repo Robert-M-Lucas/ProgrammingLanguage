@@ -24,7 +24,7 @@ namespace ProgrammingLanguage.Symbols
 
         public void Run(Interpreter interpreter, SymbolTable symbolTable)
         {
-            symbolTable.UnpackedObjects[ObjectIndex] = Constant;
+            symbolTable.Objects[ObjectIndex] = Constant;
             interpreter.SymbolID += 1;
         }
     }

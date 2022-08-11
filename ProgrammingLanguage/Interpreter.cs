@@ -86,6 +86,7 @@ namespace ProgrammingLanguage
             if (symbolTables is null) { Console.WriteLine("> No symbol table"); return; }
 
             ConsoleWriter.Flush();
+            ConsoleWriter.AutoFlush = true;
 
             Stopwatch s = new Stopwatch();
             s.Start();

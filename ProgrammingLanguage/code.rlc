@@ -1,5 +1,7 @@
-﻿let | random | 112;
+﻿let | random_num | 0;
 let | guess | 0;
+
+random | random_num | 0 | 1000;
 
 tag | restart;
 	printc | g | 1;
@@ -7,7 +9,37 @@ tag | restart;
 	printc | e | 1;
 	printc | s | 1;
 	printc | s | 1;
-	printc | : | 1;
+	printc | : ;
 	input | guess;
 
-	greater | guess | random | greater_tag;
+	greater | guess | random_num | greater_tag;
+	less | guess | random_num | less_tag;
+	goto | win;
+
+	tag | greater_tag;
+		printc | t | 1;
+		printc | o | 1;
+		printc | o | 1;
+		printc | 32 | 1;
+		printc | b | 1;
+		printc | i | 1;
+		printc | g;
+		goto | restart;
+
+	tag | less_tag;
+		printc | t | 1;
+		printc | o | 1;
+		printc | o | 1;
+		printc | 32 | 1;
+		printc | s | 1;
+		printc | m | 1;
+		printc | a | 1;
+		printc | l | 1;
+		printc | l;
+		goto | restart;
+
+tag | win;
+	printc | w | 1;
+	printc | i | 1;
+	printc | n;
+	exit;
