@@ -1,0 +1,31 @@
+﻿let | random_num | 0;
+let | guess | 0;
+
+random | random_num | 0 | 1000;
+
+tag | restart;
+	printc | guess: | 1;
+	printc | 32 | 1;
+	input | guess;
+
+	greater | guess | random_num | greater_tag;
+	less | guess | random_num | less_tag;
+	goto | win;
+
+	tag | greater_tag;
+		printc | too | 1;
+		printc | 32 | 1;
+		printc | big;
+		goto | restart;
+
+	tag | less_tag;
+		printc | too | 1;
+		printc | 32 | 1;
+		printc | small;
+		goto | restart;
+
+tag | win;
+	printc | you | 1;
+	printc | 32 | 1;
+	printc | @win;
+	exit;

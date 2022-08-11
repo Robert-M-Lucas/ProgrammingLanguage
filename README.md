@@ -32,11 +32,15 @@ tag | end;
 - 'Meta' lines are 'import', 'let' and 'tag' symbols
 - Import statements must come first in a file, followed by let statements and then everything else
 - All variables persistent - going out and into scope won't change or reset their value
+- Use `goto | [filename].[tagname];` to go to a tag in a different file (all files have a default `main` tag that will take you to the first line)
+- Use `[arrayname].[index]` to access an item in an array and treat it like any other object
 
 ## Symbols
 
 - ``` import | [path to import]; ``` - imports code from an external file
 - ``` let | [object name] | [object value]; ``` - creates an object
+- ``` arr | [array name] | [array length]; ``` - creates an array with all items 0
+- ``` arr | [array name] | [array value (string)]; ``` - creates an array with set values
 - ``` tag | [tag name]; ``` - creates a tag
 - ``` goto | [tag name]; ``` - goes to tag
 - ``` goto | [file_name.tag_name]; ``` - goes to tag in external file (code will continue - running in this file after other file finishes excecuting)
@@ -49,3 +53,4 @@ tag | end;
 - ``` invert | [object]; ``` - if object = 0 sets object to 1, else sets object to 0
 - ``` skip; ``` - does nothing
 - ``` set | [object] | [value]; ``` - sets an object to a value
+- ``` setarr | [array name] | [array value]; ``` - changes the contents of an array

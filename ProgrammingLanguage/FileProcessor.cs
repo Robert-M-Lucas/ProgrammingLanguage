@@ -79,6 +79,7 @@ namespace ProgrammingLanguage
             {
                 symbolTable.TempObjectNames = null;
                 symbolTable.TempSymbolNames = null;
+                symbolTable.TempArrayNames = null;
                 symbolTable.Objects = symbolTable.UnpackedObjects.ToArray();
                 symbolTable.UnpackedObjects = null;
             }
@@ -86,7 +87,6 @@ namespace ProgrammingLanguage
 
         public int ProcessFile(string file_path, string calling_path)
         {
-            Console.WriteLine(file_path);
             if (Path.GetDirectoryName(file_path) == string.Empty) { file_path = Path.Join(Path.GetDirectoryName(calling_path), file_path); }
             call_stack.Add(file_path);
             line_no.Add(0);
@@ -151,7 +151,7 @@ namespace ProgrammingLanguage
                     
                     if (pass == -1)
                     {
-                        if (command == "import" || command == "let" || command == "tag") { meta_lines_passed += 1; }
+                        if (command == "import" || command == "let" || command == "arr" || command == "tag") { meta_lines_passed += 1; }
                     }
                     // Import phase
                     else if (pass == 0)
@@ -174,14 +174,44 @@ namespace ProgrammingLanguage
                         if (command == "import") throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Import commands must be at the top of the file");
                         else if (command == "let") 
                         {
-                            if (SymbolTables[current_symbol_table].TempSymbolNames.ContainsKey(line[1]) || SymbolTables[current_symbol_table].TempObjectNames.ContainsKey(line[1]))
+                            if (SymbolTables[current_symbol_table].ContainsName(line[1]))
                             {
-                                throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Name '{line[1]}' already exists");
+                                throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, $"Name '{line[1]}' already exists");
                             }
                             SymbolTables[current_symbol_table].TempObjectNames[line[1]] = SymbolTables[current_symbol_table].UnpackedObjects.Count;
                             try { SymbolTables[current_symbol_table].UnpackedObjects.Add(new Argument(line[2], null, 0, null).Value); } 
                             catch (FormatException) { throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Variable value incorrectly formatted");  }
                             
+                            completed_lines.Add(line_no[line_no.Count - 1]);
+                        }
+                        else if (command == "arr")
+                        {
+                            if (SymbolTables[current_symbol_table].ContainsName(line[1]))
+                            {
+                                throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, $"Name '{line[1]}' already exists");
+                            }
+
+                            Argument array_contents = new Argument(line[2]);
+                            if (array_contents.Type == ArgumentType.Constant)
+                            {
+                                SymbolTables[current_symbol_table].TempArrayNames[line[1]] = 
+                                    new Tuple<int, int>(SymbolTables[current_symbol_table].UnpackedObjects.Count, array_contents.Value);
+                                for (int i = 0; i < array_contents.Value; i++)
+                                {
+                                    SymbolTables[current_symbol_table].UnpackedObjects.Add(0);
+                                }
+                            }
+                            else
+                            {
+                                SymbolTables[current_symbol_table].TempArrayNames[line[1]] =
+                                    new Tuple<int, int>(SymbolTables[current_symbol_table].UnpackedObjects.Count, array_contents.Value);
+
+                                for (int i = 0; i < array_contents.Value; i++)
+                                {
+                                    SymbolTables[current_symbol_table].UnpackedObjects.Add(array_contents.ValueArr[i]);
+                                }
+                            }
+
                             completed_lines.Add(line_no[line_no.Count - 1]);
                         }
                         else {
@@ -192,10 +222,10 @@ namespace ProgrammingLanguage
                     else if (pass == 2)
                     {
                         if (command == "import") throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Import commands must be at the top of the file");
-                        else if (command == "let") throw new ProcessingException($"Error processing '{file_path}' [{line_no[line_no.Count - 1] + 1} - Variable declatarions must be at the top of the file below imports]");
+                        else if (command == "let" || command == "arr") throw new ProcessingException($"Error processing '{file_path}' [{line_no[line_no.Count - 1] + 1} - Variable declatarions must be at the top of the file below imports]");
                         else if (command == "tag")
                         {
-                            if (SymbolTables[current_symbol_table].TempSymbolNames.ContainsKey(line[1]) || SymbolTables[current_symbol_table].TempObjectNames.ContainsKey(line[1]))
+                            if (SymbolTables[current_symbol_table].ContainsName(line[1]))
                             {
                                 throw new ProcessingException($"Error processing '{file_path}' - Name '{line[1]}' already exists [{line_no[line_no.Count - 1] + 1}]");
                             }
@@ -208,7 +238,7 @@ namespace ProgrammingLanguage
                     else
                     {
                         if (command == "import") throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Import commands must be at the top of the file");
-                        else if (command == "let") throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Variable declatarions must be at the top of the file below imports");
+                        else if (command == "let" || command == "arr") throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Variable declatarions must be at the top of the file below imports");
                         else 
                         {
                             if (!SymbolNames.ContainsKey(command)) throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, $"Symbol '{command}' not found");
