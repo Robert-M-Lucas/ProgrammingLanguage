@@ -85,6 +85,26 @@ namespace ProgrammingLanguage
             }
         }
 
+        public void CheckName(string name)
+        {
+            if (name[0] == '@')
+            {
+                Console.WriteLine("Warning - A variable name starts with '@'. '@' is a character that forces the processor to treat the following string as a literal so this variable can never be referenced");
+            }
+            else if (int.TryParse(name, out _))
+            {
+                Console.WriteLine("Warning - A variable name is a number, this will prevent that number from being used unless you prefix an '@' symbol");
+            }
+        }
+
+        public void CheckTag(string name)
+        {
+            if (name == "start")
+            {
+                Console.WriteLine("Warning - A tag is called start. This overrides the builtin start tag.");
+            }
+        }
+
         public int ProcessFile(string file_path, string calling_path)
         {
             if (Path.GetDirectoryName(file_path) == string.Empty) { file_path = Path.Join(Path.GetDirectoryName(calling_path), file_path); }
@@ -181,7 +201,7 @@ namespace ProgrammingLanguage
                             SymbolTables[current_symbol_table].TempObjectNames[line[1]] = SymbolTables[current_symbol_table].UnpackedObjects.Count;
                             try { SymbolTables[current_symbol_table].UnpackedObjects.Add(new Argument(line[2], null, 0, null).Value); } 
                             catch (FormatException) { throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Variable value incorrectly formatted");  }
-                            
+                            CheckName(line[1]);
                             completed_lines.Add(line_no[line_no.Count - 1]);
                         }
                         else if (command == "arr")
@@ -211,7 +231,7 @@ namespace ProgrammingLanguage
                                     SymbolTables[current_symbol_table].UnpackedObjects.Add(array_contents.ValueArr[i]);
                                 }
                             }
-
+                            CheckName(line[1]);
                             completed_lines.Add(line_no[line_no.Count - 1]);
                         }
                         else {
@@ -231,6 +251,7 @@ namespace ProgrammingLanguage
                             }
                             SymbolTables[current_symbol_table].TempSymbolNames[line[1]] = line_no[line_no.Count - 1] - meta_lines_passed;
                             meta_lines_passed++;
+                            CheckTag(line[1]);
                             completed_lines.Add(line_no[line_no.Count - 1]);
                         }
                     }

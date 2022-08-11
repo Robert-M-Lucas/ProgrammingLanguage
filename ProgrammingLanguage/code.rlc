@@ -1,6 +1,1 @@
-﻿arr | a | hello;
-
-printc | a;
-set | a.1 | x;
-printc | a;
-printc | a.1;
+﻿

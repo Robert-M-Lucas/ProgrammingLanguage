@@ -32,7 +32,7 @@ tag | end;
 - 'Meta' lines are 'import', 'let' and 'tag' symbols
 - Import statements must come first in a file, followed by let statements and then everything else
 - All variables persistent - going out and into scope won't change or reset their value
-- Use `goto | [filename].[tagname];` to go to a tag in a different file (all files have a default `main` tag that will take you to the first line)
+- Use `goto | [filename].[tagname];` to go to a tag in a different file (all files have a default `start` tag that will take you to the first line)
 - Use `[arrayname].[index]` to access an item in an array and treat it like any other object
 
 ## Symbols

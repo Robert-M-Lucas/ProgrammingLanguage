@@ -64,7 +64,7 @@
                         throw new ProcessingException($"File {path[0]} not found");
                     }
 
-                    if (path[1] == "start")
+                    if (path[1] == "start" && !symbolTables[Value2].TempSymbolNames.ContainsKey("start"))
                     {
                         Value = 0;
                     }
