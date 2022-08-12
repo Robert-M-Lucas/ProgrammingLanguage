@@ -31,8 +31,8 @@ tag | loop;
 
 	less | input_value | 1 | ask_input;
 	greater | input_value | 9 | ask_input;
-
 	sub | input_value | 1;
+	notequal | board.input_value | 2 | ask_input;
 
 	set | board.input_value | turn;
 
