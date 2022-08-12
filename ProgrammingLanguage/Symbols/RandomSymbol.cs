@@ -8,7 +8,7 @@ namespace ProgrammingLanguage.Symbols
 {
     internal class RandomSymbol : Symbol
     {
-        int ObjectIndex;
+        Argument? Object;
         Argument? arg1;
         Argument? arg2;
         Random? r;
@@ -16,13 +16,13 @@ namespace ProgrammingLanguage.Symbols
         public string GetName() => "random";
         public string? Build(Argument[] arguments)
         {
-            if (!Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object })
-            && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object, ArgumentType.Constant, ArgumentType.Constant })
-            && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object, ArgumentType.Object, ArgumentType.Constant })
-            && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object, ArgumentType.Constant, ArgumentType.Object })
-            && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object, ArgumentType.Object, ArgumentType.Object })) return "Arguments incorrectly formatted";
+            if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable })
+            && !Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Value, EvalType.Value })
+            && !Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Variable, EvalType.Value })
+            && !Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Value, EvalType.Variable })
+            && !Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Variable, EvalType.Variable })) return "Arguments incorrectly formatted";
 
-            ObjectIndex = arguments[0].Value;
+            Object = arguments[0];
            
             if (arguments.Length > 1)
             {
@@ -35,21 +35,18 @@ namespace ProgrammingLanguage.Symbols
             return null;
         }
 
-        public void Run(Interpreter interpreter, SymbolTable symbolTable)
+        public void Run(Interpreter interpreter)
         {
             int LowerBound = int.MinValue;
             int UpperBound = int.MaxValue;
 
             if (arg1 is not null)
             {
-                if (arg1.Type == ArgumentType.Constant) LowerBound = arg1.Value;
-                else LowerBound = symbolTable.Objects[arg1.Value];
-
-                if (arg2.Type == ArgumentType.Constant) UpperBound = arg2.Value;
-                else UpperBound = symbolTable.Objects[arg2.Value];
+                LowerBound = Argument.EvaluateIntArg(arg1, interpreter);
+                UpperBound = Argument.EvaluateIntArg(arg2, interpreter);
             }
 
-            symbolTable.Objects[ObjectIndex] = r.Next(LowerBound, UpperBound);
+            interpreter.CurrentSymbolTable.Objects[Argument.EvaluateObjectArg(Object, interpreter)] = r.Next(LowerBound, UpperBound);
             interpreter.SymbolID++;
         }
     }

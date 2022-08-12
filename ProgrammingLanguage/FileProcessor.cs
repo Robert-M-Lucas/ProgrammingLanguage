@@ -212,7 +212,7 @@ namespace ProgrammingLanguage
                             }
 
                             Argument array_contents = new Argument(line[2]);
-                            if (array_contents.Type == ArgumentType.Constant)
+                            if (array_contents.ArgumentType == ArgType.Constant)
                             {
                                 int default_value = 0;
                                 if (line.Length > 3) { default_value = int.Parse(line[3]); }

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace ProgrammingLanguage.Symbols
 {
-    internal class PrintSymbol : Symbol
+    internal class PrintNLSymbol : Symbol
     {
         Argument? printValue;
 
-        public string GetName() => "print";
+        public string GetName() => "printnl";
         public string? Build(Argument[] arguments)
         {
             if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Value })
@@ -25,6 +25,7 @@ namespace ProgrammingLanguage.Symbols
         {
 
             Interpreter.Print(Argument.EvaluateIntArg(printValue, interpreter).ToString());
+            Interpreter.PrintLine("");
             interpreter.SymbolID += 1;
         }
     }

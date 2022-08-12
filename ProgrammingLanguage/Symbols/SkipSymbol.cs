@@ -11,12 +11,12 @@ namespace ProgrammingLanguage.Symbols
         public string GetName() => "skip";
         public string? Build(Argument[] arguments)
         {
-            if (!Argument.MatchesPattern(arguments, new ArgumentType[] { })) return "Arguments incorrectly formatted";
+            if (!Argument.MatchesArgPattern(arguments, new ArgType[] { })) return "Arguments incorrectly formatted";
 
             return null;
         }
 
-        public void Run(Interpreter interpreter, SymbolTable symbolTable)
+        public void Run(Interpreter interpreter)
         {
             interpreter.SymbolID += 1;
         }

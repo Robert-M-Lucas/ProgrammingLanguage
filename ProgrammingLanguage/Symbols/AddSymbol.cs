@@ -8,25 +8,24 @@ namespace ProgrammingLanguage.Symbols
 {
     internal class AddSymbol : Symbol
     {
-        int ObjectIndex;
-        Argument? CompareTo;
+        Argument? Object;
+        Argument? Modifier;
 
         public string GetName() => "add";
         public string? Build(Argument[] arguments)
         {
-            if (!Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object, ArgumentType.Object }) &&
-                !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object, ArgumentType.Constant }) &&
-                !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object, ArgumentType.VariableArrayReference })) return "Arguments incorrectly formatted";
+            if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Value })
+                && !Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Variable })) return "Arguments incorrectly formatted";
 
-            ObjectIndex = arguments[0].Value;
-            CompareTo = arguments[1];
+            Object = arguments[0];
+            Modifier = arguments[1];
 
             return null;
         }
 
-        public void Run(Interpreter interpreter, SymbolTable symbolTable)
+        public void Run(Interpreter interpreter)
         {
-            symbolTable.Objects[ObjectIndex] += (int)(Argument.EvaluateArg(CompareTo, interpreter, symbolTable)?.Int);
+            interpreter.CurrentSymbolTable.Objects[Argument.EvaluateObjectArg(Object, interpreter)] += (int)(Argument.EvaluateIntArg(Modifier, interpreter));
             interpreter.SymbolID++;
         }
     }

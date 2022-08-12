@@ -8,22 +8,23 @@ namespace ProgrammingLanguage.Symbols
 {
     internal class InvertSymbol : Symbol
     {
-        int ObjectIndex;
+        Argument Object;
 
         public string GetName() => "invert";
         public string? Build(Argument[] arguments)
         {
-            if (!Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object })) return "Arguments incorrectly formatted";
+            if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable })) return "Arguments incorrectly formatted";
 
-            ObjectIndex = arguments[0].Value;
+            Object = arguments[0];
 
             return null;
         }
 
-        public void Run(Interpreter interpreter, SymbolTable symbolTable)
+        public void Run(Interpreter interpreter)
         {
-            if (symbolTable.Objects[ObjectIndex] == 0) { symbolTable.Objects[ObjectIndex] = 1; }
-            else { symbolTable.Objects[ObjectIndex] = 0; }
+            int obj_index = Argument.EvaluateObjectArg(Object, interpreter);
+            if (interpreter.CurrentSymbolTable.Objects[obj_index] == 0) { interpreter.CurrentSymbolTable.Objects[obj_index] = 1; }
+            else { interpreter.CurrentSymbolTable.Objects[obj_index] = 0; }
 
             interpreter.SymbolID += 1;
         }

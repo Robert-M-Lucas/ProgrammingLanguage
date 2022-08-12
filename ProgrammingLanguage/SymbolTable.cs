@@ -24,7 +24,7 @@ namespace ProgrammingLanguage
 
         public void Excecute(int symbolID, Interpreter interpreter)
         {
-            Symbols[symbolID].Run(interpreter, this);
+            Symbols[symbolID].Run(interpreter);
         } 
     }
 }

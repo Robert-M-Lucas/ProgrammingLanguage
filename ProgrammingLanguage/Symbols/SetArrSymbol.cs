@@ -8,70 +8,49 @@ namespace ProgrammingLanguage.Symbols
 {
     internal class SetArrSymbol : Symbol
     {
-        int ArrayIndex = 0;
+        Argument? Array;
         Argument? Arg1;
-        Argument? Arg2;
 
         public string GetName() => "setarr";
         public string? Build(Argument[] arguments)
         {
-            if (!Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Array, ArgumentType.Array })
-                && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Array, ArgumentType.ArrayConstant })
-                 && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Array, ArgumentType.Constant, ArgumentType.Constant })
-                 && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Array, ArgumentType.Constant, ArgumentType.Object })
-                 && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Array, ArgumentType.Object, ArgumentType.Constant })
-                 && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Array, ArgumentType.Object, ArgumentType.Object })) return "Arguments incorrectly formatted";
+            if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.ArrayVariable, EvalType.ArrayValue })
+                && !Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.ArrayVariable, EvalType.ArrayVariable })
+                 && !Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.ArrayVariable, EvalType.Variable })
+                 && !Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.ArrayVariable, EvalType.Value })) return "Arguments incorrectly formatted";
 
-            ArrayIndex = arguments[0].Value;
+            Array = arguments[0];
             Arg1 = arguments[1];
-            if (arguments.Length > 2)
-            {
-                Arg2 = arguments[2];
-            }
 
             return null;
         }
 
-        public void Run(Interpreter interpreter, SymbolTable symbolTable)
+        public void Run(Interpreter interpreter)
         {
-            if (Arg1.Type == ArgumentType.ArrayConstant)
-            {
-                for (int i = 0; i < Arg1.ValueArr.Length; i++)
-                {
-                    symbolTable.Objects[ArrayIndex+i] = Arg1.ValueArr[i];
-                }
-            }
-            else if (Arg1.Type == ArgumentType.ArrayConstant)
-            {
-                for (int i = 0; i < Arg1.ValueArr.Length; i++)
-                {
-                    symbolTable.Objects[ArrayIndex + i] = Arg1.ValueArr[i];
-                }
-            }
-            else
-            {
-                int index;
-                int value;
+            Tuple<int, int> array_ref = Argument.EvaluateArrRefArg(Array, interpreter);
 
-                if (Arg1.Type == ArgumentType.Constant)
+            int[]? new_arr = null;
+            int? new_val = null;
+            if (Arg1.EvalueType == EvalType.ArrayVariable || Arg1.EvalueType == EvalType.ArrayValue) 
+            { 
+                new_arr = Argument.EvaluateArrArg(Arg1, interpreter);
+                if (new_arr.Length != array_ref.Item2) throw new ArgumentException("Array length mismatch");
+            }
+            else { new_val = Argument.EvaluateIntArg(Arg1, interpreter); }
+
+            for (int i = array_ref.Item1; i < array_ref.Item1 + array_ref.Item2; i++)
+            {
+                if (new_arr is not null)
                 {
-                    index = Arg1.Value;
+                    interpreter.CurrentSymbolTable.Objects[i] = new_arr[i - array_ref.Item1];
                 }
                 else
                 {
-                    index = symbolTable.Objects[Arg1.Value];
+                    if (new_val is null) throw new NullReferenceException();
+                    interpreter.CurrentSymbolTable.Objects[i] = (int)new_val;
                 }
-
-                if (Arg2.Type == ArgumentType.Constant)
-                {
-                    value = Arg2.Value;
-                }
-                else
-                {
-                    value = symbolTable.Objects[Arg2.Value];
-                }
-                symbolTable.Objects[ArrayIndex +  index] = value;
             }
+
             interpreter.SymbolID += 1;
         }
     }

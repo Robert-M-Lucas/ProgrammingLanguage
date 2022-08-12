@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace ProgrammingLanguage.Symbols
 {
-    internal class PrintCSymbol : Symbol
+    internal class PrintCNLSymbol : Symbol
     {
         Argument? printValue;
 
-        public string GetName() => "printc";
+        public string GetName() => "printcnl";
         public string? Build(Argument[] arguments)
         {
             if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Value })
@@ -35,6 +35,7 @@ namespace ProgrammingLanguage.Symbols
                     Interpreter.Print(Convert.ToChar(arr[i]).ToString());
                 }
             }
+            Interpreter.PrintLine("");
             interpreter.SymbolID += 1;
         }
     }

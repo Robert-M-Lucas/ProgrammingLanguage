@@ -1,6 +1,15 @@
 ﻿namespace ProgrammingLanguage
 {
-    internal enum ArgumentType {
+    internal enum EvalType
+    {
+        Value = 0,
+        Variable = 1,
+        ArrayVariable = 2,
+        ArrayValue = 3,
+        Symbol = 4
+    }
+
+    internal enum ArgType {
         Constant = 0,
         Object = 1,
         Symbol = 2,
@@ -31,17 +40,19 @@
 
     internal class Argument
     {
-        public int Value;
+        public int Value = -1;
         public int Value2 = -1;
-        public int[] ValueArr;
+        public int[]? ValueArr;
 
-        public ArgumentType Type;
+        public ArgType ArgumentType;
+        public EvalType EvalueType;
 
         public Argument(string input, List<SymbolTable>? symbolTables = null, int current_table = 0, Dictionary<string, int>? file_names = null)
         {
             if (input == string.Empty)
             {
-                Type = ArgumentType.Constant;
+                ArgumentType = ArgType.Constant;
+                EvalueType = EvalType.Value;
                 Value = 0;
                 return;
             }
@@ -55,17 +66,20 @@
 
             if (symbolTables is not null && symbolTables[current_table].TempObjectNames.ContainsKey(input))
             {
-                Type = ArgumentType.Object;
+                ArgumentType = ArgType.Object;
+                EvalueType = EvalType.Variable;
                 Value = symbolTables[current_table].TempObjectNames[input];
             }
             else if (symbolTables is not null && symbolTables[current_table].TempSymbolNames.ContainsKey(input))
             {
-                Type = ArgumentType.Symbol;
+                ArgumentType = ArgType.Symbol;
+                EvalueType = EvalType.Symbol;
                 Value = symbolTables[current_table].TempSymbolNames[input];
             }
             else if (symbolTables is not null && symbolTables[current_table].TempArrayNames.ContainsKey(input))
             {
-                Type = ArgumentType.Array;
+                ArgumentType = ArgType.Array;
+                EvalueType = EvalType.ArrayVariable;
                 var value_tuple = symbolTables[current_table].TempArrayNames[input];
                 Value = value_tuple.Item1;
                 Value2 = value_tuple.Item2;
@@ -78,13 +92,15 @@
                 {
                     if (symbolTables[current_table].TempObjectNames.ContainsKey(path[1]))
                     {
-                        Type = ArgumentType.VariableArrayReference;
+                        ArgumentType = ArgType.VariableArrayReference;
+                        EvalueType = EvalType.Variable;
                         Value = symbolTables[current_table].TempArrayNames[path[0]].Item1;
                         Value2 = symbolTables[current_table].TempObjectNames[path[1]];
                     }
                     else
                     {
-                        Type = ArgumentType.Object;
+                        ArgumentType = ArgType.Object;
+                        EvalueType = EvalType.Variable;
                         Value = symbolTables[current_table].TempArrayNames[path[0]].Item1 + int.Parse(path[1]);
                     }
                 }
@@ -114,7 +130,8 @@
                             throw new ProcessingException($"Tag {path[1]} not found");
                         }
                     }
-                    Type = ArgumentType.ExternalSymbol;
+                    ArgumentType = ArgType.ExternalSymbol;
+                    EvalueType = EvalType.Symbol;
                 } 
             }
             else
@@ -124,11 +141,13 @@
                     if (input.Length == 1)
                     {
                         Value = input[0];
-                        Type = ArgumentType.Constant;
+                        ArgumentType = ArgType.Constant;
+                        EvalueType = EvalType.Value;
                     }
                     else
                     {
-                        Type = ArgumentType.ArrayConstant;
+                        ArgumentType = ArgType.ArrayConstant;
+                        EvalueType = EvalType.ArrayValue;
                         Value = input.Length;
                         ValueArr = new int[input.Length];
                         for (int i = 0; i < input.Length; i++)
@@ -139,43 +158,109 @@
                 }
                 else
                 {
-                    Type = ArgumentType.Constant;
+                    ArgumentType = ArgType.Constant;
+                    EvalueType = EvalType.Value;
                 }
             }
         }
 
-        public static bool MatchesPattern(Argument[] arguments, ArgumentType[] argumentTypes)
+        public static bool MatchesArgPattern(Argument[] arguments, ArgType[] argumentTypes)
         {
             if (arguments.Length != argumentTypes.Length) { return false; }
 
             for (int i = 0; i < arguments.Length; i++)
             {
-                if (arguments[i].Type != argumentTypes[i]) { return false; }
+                if (arguments[i].ArgumentType != argumentTypes[i]) { return false; }
             }
 
             return true;
         }
 
-        public static IntOrArr? EvaluateArg(Argument arg, Interpreter interpreter, SymbolTable symbolTable)
+        public static bool MatchesEvalPattern(Argument[] arguments, EvalType[] evalTypes)
         {
-            switch (arg.Type)
+            if (arguments.Length != evalTypes.Length) { return false; }
+
+            for (int i = 0; i < arguments.Length; i++)
             {
-                case ArgumentType.Constant:
-                    return new IntOrArr(arg.Value);
-                case ArgumentType.Object:
-                    return new IntOrArr(symbolTable.Objects[arg.Value]);
-                case ArgumentType.Array:
-                    return new IntOrArr(symbolTable.Objects[arg.Value..^(arg.Value+(arg.Value2-1))]);
-                case ArgumentType.ArrayConstant:
-                    return new IntOrArr(arg.ValueArr[..]);
-                case ArgumentType.ExternalSymbol:
-                    return null;
-                case ArgumentType.Symbol:
-                    return null;
-                case ArgumentType.VariableArrayReference:
-                    return new IntOrArr(symbolTable.Objects[arg.Value + symbolTable.Objects[arg.Value2]]);
+                if (arguments[i].EvalueType != evalTypes[i]) { return false; }
             }
-            return null;
+
+            return true;
+        }
+
+        public static int EvaluateIntArg(Argument arg, Interpreter interpreter)
+        {
+            switch (arg.ArgumentType)
+            {
+                case ArgType.Constant:
+                    return arg.Value;
+                case ArgType.Object:
+                    return interpreter.CurrentSymbolTable.Objects[arg.Value];
+                case ArgType.VariableArrayReference:
+                    return interpreter.CurrentSymbolTable.Objects[arg.Value + interpreter.CurrentSymbolTable.Objects[arg.Value2]];
+                default:
+                    throw new FormatException($"Arg {arg.ArgumentType} can't be treated as int");
+            }
+        }
+
+        public static int EvaluateObjectArg(Argument arg, Interpreter interpreter)
+        {
+            switch (arg.ArgumentType)
+            {
+                case ArgType.Object:
+                    return arg.Value;
+                case ArgType.VariableArrayReference:
+                    return arg.Value + interpreter.CurrentSymbolTable.Objects[arg.Value2];
+                default:
+                    throw new FormatException($"Arg {arg.ArgumentType} can't be treated as object");
+            }
+        }
+
+        public static int[] EvaluateArrArg(Argument arg, Interpreter interpreter)
+        {
+            switch (arg.ArgumentType)
+            {
+                case ArgType.Array:
+                    return interpreter.CurrentSymbolTable.Objects[arg.Value..^(arg.Value+arg.Value2)];
+                case ArgType.ArrayConstant:
+                    if (arg.ValueArr is null) throw new NullReferenceException();
+                    return arg.ValueArr[..];
+                default:
+                    throw new FormatException($"Arg {arg.ArgumentType} can't be treated as arr");
+            }
+        }
+
+        public static Tuple<int, int> EvaluateArrRefArg(Argument arg, Interpreter interpreter)
+        {
+            switch (arg.ArgumentType)
+            {
+                case ArgType.Array:
+                    return new Tuple<int, int>(arg.Value, arg.Value2);
+                default:
+                    throw new FormatException($"Arg {arg.ArgumentType} can't be treated as arr reference");
+            }
+        }
+        public static Tuple<int, int> EvaluateSymbolArg(Argument arg, Interpreter interpreter)
+        {
+            switch (arg.ArgumentType)
+            {
+                case ArgType.Symbol:
+                    return new Tuple<int, int>(interpreter.SymbolTableID, arg.Value);
+                case ArgType.ExternalSymbol:
+                    return new Tuple<int, int>(arg.Value2, arg.Value);
+                default:
+                    throw new FormatException($"Arg {arg.ArgumentType} can't be treated as symbol");
+            }
+        }
+
+        public static void ApplySymbol(Tuple<int, int> symbol, Interpreter interpreter)
+        {
+            if (symbol.Item1 != interpreter.SymbolTableID)
+            {
+                interpreter.PushHierachy();
+                interpreter.SymbolTableID = symbol.Item1;
+            }
+            interpreter.SymbolID = symbol.Item2;
         }
     }
 }

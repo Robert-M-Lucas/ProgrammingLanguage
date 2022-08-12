@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace ProgrammingLanguage.Symbols
 {
-    internal class EqualSymbol : Symbol
+    internal class NotEqualSymbol : Symbol
     {
         Argument? Value1;
         Argument? Value2;
         Argument? Symbol;
 
-        public string GetName() => "equal";
+        public string GetName() => "notequal";
         public string? Build(Argument[] arguments)
         {
             if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Variable, EvalType.Symbol }) &&
@@ -29,7 +29,7 @@ namespace ProgrammingLanguage.Symbols
 
         public void Run(Interpreter interpreter)
         {
-            if (Argument.EvaluateIntArg(Value1, interpreter) == Argument.EvaluateIntArg(Value2, interpreter)) { Argument.ApplySymbol(Argument.EvaluateSymbolArg(Symbol, interpreter), interpreter); }
+            if (Argument.EvaluateIntArg(Value1, interpreter) != Argument.EvaluateIntArg(Value2, interpreter)) { Argument.ApplySymbol(Argument.EvaluateSymbolArg(Symbol, interpreter), interpreter); }
             else { interpreter.SymbolID++; }
         }
     }

@@ -8,23 +8,24 @@ namespace ProgrammingLanguage.Symbols
 {
     internal class IfSymbol : Symbol
     {
-        int ObjectIndex;
-        int SymbolIndex;
+        Argument? Value1;
+        Argument? Symbol;
 
         public string GetName() => "if";
         public string? Build(Argument[] arguments)
         {
-            if (!Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object, ArgumentType.Symbol })) return "Arguments incorrectly formatted";
+            if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Symbol }) &&
+                !Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Value, EvalType.Symbol })) return "Arguments incorrectly formatted";
 
-            ObjectIndex = arguments[0].Value;
-            SymbolIndex = arguments[1].Value;
+            Value1 = arguments[0];
+            Symbol = arguments[1];
 
             return null;
         }
 
-        public void Run(Interpreter interpreter, SymbolTable symbolTable)
+        public void Run(Interpreter interpreter)
         {
-            if (symbolTable.Objects[ObjectIndex] == 1) { interpreter.SymbolID = SymbolIndex; }
+            if (Argument.EvaluateIntArg(Value1, interpreter) == 1) { Argument.ApplySymbol(Argument.EvaluateSymbolArg(Symbol, interpreter), interpreter); }
             else { interpreter.SymbolID++; }
         }
     }

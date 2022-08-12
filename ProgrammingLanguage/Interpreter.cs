@@ -17,6 +17,14 @@ namespace ProgrammingLanguage
 
         List<SymbolTable>? symbolTables;
 
+        public SymbolTable CurrentSymbolTable {
+            get
+            {
+                if (symbolTables is null) throw new NullReferenceException();
+                return symbolTables[SymbolTableID];
+            }
+        }
+
         public List<Tuple<int, int>> tableHierachy = new List<Tuple<int, int>>();
 
         public int SymbolID = 0;
@@ -78,6 +86,7 @@ namespace ProgrammingLanguage
 
         public void PushHierachy()
         {
+            SymbolID++;
             tableHierachy.Add(new Tuple<int, int>(SymbolTableID, SymbolID));
         }
 

@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace ProgrammingLanguage.Symbols
 {
-    internal class MultiplySymbol : Symbol
+    internal class ModSymbol : Symbol
     {
         Argument? Object;
         Argument? Modifier;
 
-        public string GetName() => "multiply";
+        public string GetName() => "mod";
         public string? Build(Argument[] arguments)
         {
             if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Value })
@@ -25,7 +25,7 @@ namespace ProgrammingLanguage.Symbols
 
         public void Run(Interpreter interpreter)
         {
-            interpreter.CurrentSymbolTable.Objects[Argument.EvaluateObjectArg(Object, interpreter)] *= (int)(Argument.EvaluateIntArg(Modifier, interpreter));
+            interpreter.CurrentSymbolTable.Objects[Argument.EvaluateObjectArg(Object, interpreter)] %= (int)(Argument.EvaluateIntArg(Modifier, interpreter));
             interpreter.SymbolID++;
         }
     }

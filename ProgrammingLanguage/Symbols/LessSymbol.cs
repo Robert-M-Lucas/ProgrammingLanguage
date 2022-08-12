@@ -8,30 +8,29 @@ namespace ProgrammingLanguage.Symbols
 {
     internal class LessSymbol : Symbol
     {
-        int ObjectIndex;
-        Argument? CompareTo;
-        int SymbolIndex;
+        Argument? Value1;
+        Argument? Value2;
+        Argument? Symbol;
 
         public string GetName() => "less";
         public string? Build(Argument[] arguments)
         {
-            if (!Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object, ArgumentType.Object, ArgumentType.Symbol }) &&
-                !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object, ArgumentType.Constant, ArgumentType.Symbol })) return "Arguments incorrectly formatted";
+            if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Variable, EvalType.Symbol }) &&
+                !Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Value, EvalType.Symbol }) &&
+                !Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Value, EvalType.Variable, EvalType.Symbol }) &&
+                !Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Value, EvalType.Value, EvalType.Symbol })) return "Arguments incorrectly formatted";
 
-            ObjectIndex = arguments[0].Value;
-            CompareTo = arguments[1];
-            SymbolIndex = arguments[2].Value;
+            Value1 = arguments[0];
+            Value2 = arguments[1];
+            Symbol = arguments[2];
 
             return null;
         }
 
-        public void Run(Interpreter interpreter, SymbolTable symbolTable)
+        public void Run(Interpreter interpreter)
         {
-            if (CompareTo is not null)
-            {
-                if (symbolTable.Objects[ObjectIndex] < (int)(Argument.EvaluateArg(CompareTo, interpreter, symbolTable)?.Int)) { interpreter.SymbolID = SymbolIndex; }
-                else { interpreter.SymbolID++; }
-            }
+            if (Argument.EvaluateIntArg(Value1, interpreter) < Argument.EvaluateIntArg(Value2, interpreter)) { Argument.ApplySymbol(Argument.EvaluateSymbolArg(Symbol, interpreter), interpreter); }
+            else { interpreter.SymbolID++; }
         }
     }
 }

@@ -8,41 +8,25 @@ namespace ProgrammingLanguage.Symbols
 {
     internal class SetSymbol : Symbol
     {
-        int ObjectIndex;
-        int Object2Index = -1;
-        int Constant;
+        Argument? Object;
+        Argument? Value;
 
         public string GetName() => "set";
         public string? Build(Argument[] arguments)
         {
-            if (!Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object, ArgumentType.Constant })
-                && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object, ArgumentType.Object })) return "Arguments incorrectly formatted";
+            if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Value })
+                && !Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Variable })) return "Arguments incorrectly formatted";
 
-            ObjectIndex = arguments[0].Value;
-            if (arguments[1].Type == ArgumentType.Object)
-            {
-                Object2Index = arguments[1].Value;
-            }
-            else
-            {
-                Object2Index = -1;
-                Constant = arguments[1].Value;
-            }
+            Object = arguments[0];
+            Value = arguments[1];
             
 
             return null;
         }
 
-        public void Run(Interpreter interpreter, SymbolTable symbolTable)
+        public void Run(Interpreter interpreter)
         {
-            if (Object2Index == -1)
-            {
-                symbolTable.Objects[ObjectIndex] = Constant;
-            }
-            else
-            {
-                symbolTable.Objects[ObjectIndex] = symbolTable.Objects[Object2Index];
-            }
+            interpreter.CurrentSymbolTable.Objects[Argument.EvaluateObjectArg(Object, interpreter)] = Argument.EvaluateIntArg(Value, interpreter);
             interpreter.SymbolID += 1;
         }
     }

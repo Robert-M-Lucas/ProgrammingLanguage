@@ -8,33 +8,22 @@ namespace ProgrammingLanguage.Symbols
 {
     internal class GotoSymbol : Symbol
     {
-        int symbolAddress;
-        int tableAddress = -1;
+        Argument Symbol;
 
         public string GetName() => "goto";
 
         public string? Build(Argument[] arguments)
         {
-            if (!Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Symbol })
-                && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.ExternalSymbol })) return "Arguments incorrectly formatted";
+            if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Symbol })) return "Arguments incorrectly formatted";
 
-            symbolAddress = arguments[0].Value;
-            tableAddress = arguments[0].Value2;
+            Symbol = arguments[0];
 
             return null;
         }
 
-        public void Run(Interpreter interpreter, SymbolTable symbolTable)
+        public void Run(Interpreter interpreter)
         {
-            if (tableAddress != -1)
-            {
-                interpreter.SymbolID++;
-                interpreter.PushHierachy();
-                interpreter.SymbolTableID = tableAddress;
-            }
-
-
-            interpreter.SymbolID = symbolAddress;
+            Argument.ApplySymbol(Argument.EvaluateSymbolArg(Symbol, interpreter), interpreter);
         }
     }
 }

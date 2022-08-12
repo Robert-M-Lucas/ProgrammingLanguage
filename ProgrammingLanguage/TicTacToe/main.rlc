@@ -1,4 +1,7 @@
-﻿let | turn | 0;
+﻿import | util;
+
+let | turn | 0;
+let | game_over | 0;
 arr | board | 9 | 2;
 
 let | x_iter | 0;
@@ -9,56 +12,21 @@ let | input_value | 0;
 
 tag | loop;
 
-	printc | @Turn: | 1;
-	printc | 32 | 1;
-
-	if | turn | show_o_turn;
-
-	printc | @X;
-	goto | after_show_turn;
-
-	tag | show_o_turn;
-		printc | @O;
-
-	tag | after_show_turn;
-
-
-
-
-	set | y_iter | 0;
-	set | iter | 1;
-	tag | row_loop;
-
-		set | x_iter | 0;
-		tag | column_loop;
-
-			print | iter | 1;
-			printc | 32 | 1;
-			add | x_iter | 1;
-			add | iter | 1;
-			equal | x_iter | 3 | exit_column_loop;
-			printc | 124 | 1;
-
-		goto | column_loop;
-
-		tag | exit_column_loop;
-
-			add | y_iter | 1;
-			equal | y_iter | 3 | exit_print;
-			printc | 32;
-			printc | @--------;
-
-	goto | row_loop;
-
-	tag | exit_print;
+	printc | @Turn:;
 	printc | 32;
+
+	equal | turn | 0 | util.show_o_nl;
+	equal | turn | 1 | util.show_x_nl;
+
+	goto | print_board;
+	tag | after_print_board;
 
 	tag | ask_input;
 
-	printc | @Enter | 1;
-	printc | 32 | 1;
-	printc | @move: | 1;
-	printc | 32 | 1;
+	printc | @Enter;
+	printc | 32;
+	printc | @move:;
+	printc | 32;
 	input | input_value;
 
 	less | input_value | 1 | ask_input;
@@ -66,8 +34,122 @@ tag | loop;
 
 	sub | input_value | 1;
 
-	setarr | board | input_value | turn;
+	set | board.input_value | turn;
+
+	equal | board.0 | 2 | check_2;
+	notequal | board.0 | board.1 | check_2;
+	notequal | board.1 | board.2 | check_2;
+	equal | board.0 | 0 | o_win;
+	goto | x_win;
+
+	tag | check_2;
+	equal | board.3 | 2 | check_3;
+	notequal | board.3 | board.4 | check_3;
+	notequal | board.4 | board.5 | check_3;
+	equal | board.3 | 0 | o_win;
+	goto | x_win;
+
+	tag | check_3;
+	equal | board.6 | 2 | check_4;
+	notequal | board.6 | board.7 | check_4;
+	notequal | board.7 | board.8 | check_4;
+	equal | board.6 | 0 | o_win;
+	goto | x_win;
+
+	tag | check_4;
+	equal | board.0 | 2 | check_5;
+	notequal | board.0 | board.3 | check_5;
+	notequal | board.3 | board.6 | check_5;
+	equal | board.0 | 0 | o_win;
+	goto | x_win;
+
+	tag | check_5;
+	equal | board.1 | 2 | check_6;
+	notequal | board.1 | board.4 | check_6;
+	notequal | board.4 | board.7 | check_6;
+	equal | board.1 | 0 | o_win;
+	goto | x_win;
+
+	tag | check_6;
+	equal | board.2 | 2 | check_7;
+	notequal | board.2 | board.5 | check_7;
+	notequal | board.5 | board.8 | check_7;
+	equal | board.2 | 0 | o_win;
+	goto | x_win;
+
+	tag | check_7;
+	equal | board.0 | 2 | check_8;
+	notequal | board.0 | board.4 | check_8;
+	notequal | board.4 | board.8 | check_8;
+	equal | board.0 | 0 | o_win;
+	goto | x_win;
+
+	tag | check_8;
+	equal | board.2 | 2 | after_check;
+	notequal | board.2 | board.4 | after_check;
+	notequal | board.4 | board.6 | after_check;
+	equal | board.2 | 0 | o_win;
+	goto | x_win;
+	
+	tag | after_check;
 
 	invert | turn;
 
 goto | loop;
+
+tag | o_win;
+	printc | @O;
+	printc | 32;
+	printcnl | @wins!;
+	invert | game_over;
+	goto | print_board;
+
+tag | x_win;
+	printc | @X;
+	printc | 32;
+	printcnl | @wins!;
+	invert | game_over;
+	goto | print_board;
+
+tag | print_board;
+	set | y_iter | 0;
+	set | iter | 0;
+	tag | row_loop;
+		set | x_iter | 0;
+		tag | column_loop;
+			printc | 32;
+			equal | board.iter | 2 | print_num;
+				equal | board.iter | 0 | util.show_o;
+				equal | board.iter | 1 | util.show_x;
+					
+				goto | after_print_num;
+
+			tag | print_num;
+				add | iter | 1;
+				print | iter;
+				sub | iter | 1;
+			tag | after_print_num;
+
+			printc | 32;
+			add | x_iter | 1;
+			add | iter | 1;
+			equal | x_iter | 3 | exit_column_loop;
+			printc | 124;
+
+		goto | column_loop;
+
+		tag | exit_column_loop;
+
+			add | y_iter | 1;
+			equal | y_iter | 3 | exit_print;
+			printcnl | 32;
+			printcnl | @-----------;
+
+	goto | row_loop;
+
+	tag | exit_print;
+	printcnl | 32;
+	if | game_over | done;
+	goto | after_print_board;
+
+tag | done;

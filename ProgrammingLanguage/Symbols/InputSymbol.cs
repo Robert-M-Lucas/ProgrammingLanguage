@@ -8,21 +8,21 @@ namespace ProgrammingLanguage.Symbols
 {
     internal class InputSymbol : Symbol
     {
-        int ObjectIndex;
+        Argument Object;
 
         public string GetName() => "input";
         public string? Build(Argument[] arguments)
         {
-            if (!Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object })) return "Arguments incorrectly formatted";
+            if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable })) return "Arguments incorrectly formatted";
 
-            ObjectIndex = arguments[0].Value;
+            Object = arguments[0];
 
             return null;
         }
 
-        public void Run(Interpreter interpreter, SymbolTable symbolTable)
+        public void Run(Interpreter interpreter)
         {
-            symbolTable.Objects[ObjectIndex] = new Argument(Console.ReadLine()??"0", null, 0, null).Value;
+            interpreter.CurrentSymbolTable.Objects[Argument.EvaluateObjectArg(Object, interpreter)] = new Argument(Console.ReadLine()??"0", null, 0, null).Value;
             interpreter.SymbolID += 1;
         }
     }
