@@ -22,7 +22,7 @@ namespace ProgrammingLanguage.Symbols
 
         public void Run(Interpreter interpreter, SymbolTable symbolTable)
         {
-            symbolTable.Objects[ObjectIndex] = new Argument(Console.ReadLine()??Convert.ToChar(0).ToString(), null, 0, null).Value;
+            symbolTable.Objects[ObjectIndex] = new Argument(Console.ReadLine()??"0", null, 0, null).Value;
             interpreter.SymbolID += 1;
         }
     }

@@ -3,6 +3,10 @@
     "ProgrammingLanguage": {
       "commandName": "Project",
       "commandLineArgs": "\"C:\\Users\\rober\\Documents\\C# projects\\ProgrammingLanguage\\ProgrammingLanguage\\code.rlc\""
+    },
+    "TicTacToe": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\rober\\Documents\\C# projects\\ProgrammingLanguage\\ProgrammingLanguage\\TicTacToe\\main.rlc\""
     }
   }
 }

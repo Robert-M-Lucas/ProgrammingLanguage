@@ -1,0 +1,73 @@
+﻿let | turn | 0;
+arr | board | 9 | 2;
+
+let | x_iter | 0;
+let | y_iter | 0;
+let | iter | 0;
+
+let | input_value | 0;
+
+tag | loop;
+
+	printc | @Turn: | 1;
+	printc | 32 | 1;
+
+	if | turn | show_o_turn;
+
+	printc | @X;
+	goto | after_show_turn;
+
+	tag | show_o_turn;
+		printc | @O;
+
+	tag | after_show_turn;
+
+
+
+
+	set | y_iter | 0;
+	set | iter | 1;
+	tag | row_loop;
+
+		set | x_iter | 0;
+		tag | column_loop;
+
+			print | iter | 1;
+			printc | 32 | 1;
+			add | x_iter | 1;
+			add | iter | 1;
+			equal | x_iter | 3 | exit_column_loop;
+			printc | 124 | 1;
+
+		goto | column_loop;
+
+		tag | exit_column_loop;
+
+			add | y_iter | 1;
+			equal | y_iter | 3 | exit_print;
+			printc | 32;
+			printc | @--------;
+
+	goto | row_loop;
+
+	tag | exit_print;
+	printc | 32;
+
+	tag | ask_input;
+
+	printc | @Enter | 1;
+	printc | 32 | 1;
+	printc | @move: | 1;
+	printc | 32 | 1;
+	input | input_value;
+
+	less | input_value | 1 | ask_input;
+	greater | input_value | 9 | ask_input;
+
+	sub | input_value | 1;
+
+	setarr | board | input_value | turn;
+
+	invert | turn;
+
+goto | loop;

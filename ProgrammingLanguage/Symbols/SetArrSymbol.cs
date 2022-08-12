@@ -17,10 +17,10 @@ namespace ProgrammingLanguage.Symbols
         {
             if (!Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Array, ArgumentType.Array })
                 && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Array, ArgumentType.ArrayConstant })
-                /* && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Array, ArgumentType.Constant, ArgumentType.Constant })
+                 && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Array, ArgumentType.Constant, ArgumentType.Constant })
                  && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Array, ArgumentType.Constant, ArgumentType.Object })
                  && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Array, ArgumentType.Object, ArgumentType.Constant })
-                 && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Array, ArgumentType.Object, ArgumentType.Object })*/) return "Arguments incorrectly formatted";
+                 && !Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Array, ArgumentType.Object, ArgumentType.Object })) return "Arguments incorrectly formatted";
 
             ArrayIndex = arguments[0].Value;
             Arg1 = arguments[1];
@@ -64,13 +64,12 @@ namespace ProgrammingLanguage.Symbols
 
                 if (Arg2.Type == ArgumentType.Constant)
                 {
-                    value = Arg1.Value;
+                    value = Arg2.Value;
                 }
                 else
                 {
-                    value = symbolTable.Objects[Arg1.Value];
+                    value = symbolTable.Objects[Arg2.Value];
                 }
-
                 symbolTable.Objects[ArrayIndex +  index] = value;
             }
             interpreter.SymbolID += 1;

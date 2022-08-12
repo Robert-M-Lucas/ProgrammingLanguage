@@ -102,7 +102,7 @@ namespace ProgrammingLanguage
                     {
                         symbolTables[SymbolTableID].Excecute(SymbolID, this);
                     }
-                    catch (Exception e)
+                    catch (FormatException e)
                     {
                         force_running = false;
                         Console.WriteLine($"Runtime {e.GetType()} - [{SymbolID}:{SymbolTableID}]");

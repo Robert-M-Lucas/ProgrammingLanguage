@@ -138,7 +138,7 @@ namespace ProgrammingLanguage
                 file_string = file_string.Replace("\r", "");
                 file_string = file_string.Replace("\t", "");
                 file_string = file_string.Replace(" ", "");
-                file_string = file_string.ToLower();
+                // file_string = file_string.ToLower();
             }
             catch (IOException e)
             {
@@ -214,11 +214,13 @@ namespace ProgrammingLanguage
                             Argument array_contents = new Argument(line[2]);
                             if (array_contents.Type == ArgumentType.Constant)
                             {
+                                int default_value = 0;
+                                if (line.Length > 3) { default_value = int.Parse(line[3]); }
                                 SymbolTables[current_symbol_table].TempArrayNames[line[1]] = 
                                     new Tuple<int, int>(SymbolTables[current_symbol_table].UnpackedObjects.Count, array_contents.Value);
                                 for (int i = 0; i < array_contents.Value; i++)
                                 {
-                                    SymbolTables[current_symbol_table].UnpackedObjects.Add(0);
+                                    SymbolTables[current_symbol_table].UnpackedObjects.Add(default_value);
                                 }
                             }
                             else

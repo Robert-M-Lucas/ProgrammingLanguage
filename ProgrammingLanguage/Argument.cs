@@ -7,6 +7,26 @@
         ExternalSymbol = 3,
         Array = 4,
         ArrayConstant = 5,
+        VariableArrayReference = 6
+    }
+
+    struct IntOrArr
+    {
+        public int Int = 0;
+        public int[]? Arr = null;
+        public bool IsInt = true;
+
+        public IntOrArr(int integer)
+        {
+            Int = integer;
+            IsInt = true;
+        }
+
+        public IntOrArr(int[] array)
+        {
+            Arr = array;
+            IsInt = false;
+        }
     }
 
     internal class Argument
@@ -19,6 +39,12 @@
 
         public Argument(string input, List<SymbolTable>? symbolTables = null, int current_table = 0, Dictionary<string, int>? file_names = null)
         {
+            if (input == string.Empty)
+            {
+                Type = ArgumentType.Constant;
+                Value = 0;
+                return;
+            }
             if (input[0] == '@')
             {
                 symbolTables = null;
@@ -50,8 +76,17 @@
 
                 if (symbolTables[current_table].TempArrayNames.ContainsKey(path[0]))
                 {
-                    Type = ArgumentType.Object;
-                    Value = symbolTables[current_table].TempArrayNames[path[0]].Item1 + int.Parse(path[1]);
+                    if (symbolTables[current_table].TempObjectNames.ContainsKey(path[1]))
+                    {
+                        Type = ArgumentType.VariableArrayReference;
+                        Value = symbolTables[current_table].TempArrayNames[path[0]].Item1;
+                        Value2 = symbolTables[current_table].TempObjectNames[path[1]];
+                    }
+                    else
+                    {
+                        Type = ArgumentType.Object;
+                        Value = symbolTables[current_table].TempArrayNames[path[0]].Item1 + int.Parse(path[1]);
+                    }
                 }
                 else
                 {
@@ -119,6 +154,28 @@
             }
 
             return true;
+        }
+
+        public static IntOrArr? EvaluateArg(Argument arg, Interpreter interpreter, SymbolTable symbolTable)
+        {
+            switch (arg.Type)
+            {
+                case ArgumentType.Constant:
+                    return new IntOrArr(arg.Value);
+                case ArgumentType.Object:
+                    return new IntOrArr(symbolTable.Objects[arg.Value]);
+                case ArgumentType.Array:
+                    return new IntOrArr(symbolTable.Objects[arg.Value..^(arg.Value+(arg.Value2-1))]);
+                case ArgumentType.ArrayConstant:
+                    return new IntOrArr(arg.ValueArr[..]);
+                case ArgumentType.ExternalSymbol:
+                    return null;
+                case ArgumentType.Symbol:
+                    return null;
+                case ArgumentType.VariableArrayReference:
+                    return new IntOrArr(symbolTable.Objects[arg.Value + symbolTable.Objects[arg.Value2]]);
+            }
+            return null;
         }
     }
 }

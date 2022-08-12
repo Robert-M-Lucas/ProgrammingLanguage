@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace ProgrammingLanguage.Symbols
 {
-    internal class SubtractSymbol : Symbol
+    internal class SubSymbol : Symbol
     {
         int ObjectIndex;
         Argument? CompareTo;
 
-        public string GetName() => "multiply";
+        public string GetName() => "sub";
         public string? Build(Argument[] arguments)
         {
             if (!Argument.MatchesPattern(arguments, new ArgumentType[] { ArgumentType.Object, ArgumentType.Object }) &&
@@ -25,11 +25,7 @@ namespace ProgrammingLanguage.Symbols
 
         public void Run(Interpreter interpreter, SymbolTable symbolTable)
         {
-            if (CompareTo is not null)
-            {
-                if (CompareTo.Type == ArgumentType.Constant) { symbolTable.Objects[ObjectIndex] -= CompareTo.Value; }
-                else if (CompareTo.Type == ArgumentType.Object) { symbolTable.Objects[ObjectIndex] -= symbolTable.Objects[CompareTo.Value]; }
-            }
+            symbolTable.Objects[ObjectIndex] -= (int)(Argument.EvaluateArg(CompareTo, interpreter, symbolTable)?.Int);
             interpreter.SymbolID++;
         }
     }
