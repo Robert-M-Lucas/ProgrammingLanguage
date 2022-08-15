@@ -9,6 +9,7 @@ namespace ProgrammingLanguage.Symbols
     internal class SkipSymbol : Symbol
     {
         public string GetName() => "skip";
+        public string GetClose() => string.Empty;
         public string? Build(Argument[] arguments)
         {
             if (!Argument.MatchesArgPattern(arguments, new ArgType[] { })) return "Arguments incorrectly formatted";

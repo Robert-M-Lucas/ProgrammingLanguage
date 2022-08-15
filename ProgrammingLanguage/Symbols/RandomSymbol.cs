@@ -14,6 +14,7 @@ namespace ProgrammingLanguage.Symbols
         Random? r;
 
         public string GetName() => "random";
+        public string GetClose() => "| [Variable] | [Opt Min] | [Opt Max]";
         public string? Build(Argument[] arguments)
         {
             if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable })

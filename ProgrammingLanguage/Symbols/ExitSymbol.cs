@@ -9,6 +9,7 @@ namespace ProgrammingLanguage.Symbols
     internal class ExitSymbol : Symbol
     {
         public string GetName() => "exit";
+        public string GetClose() => string.Empty;
         public string? Build(Argument[] arguments)
         {
             if (!Argument.MatchesArgPattern(arguments, new ArgType[] { })) return "Arguments incorrectly formatted";

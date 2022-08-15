@@ -12,6 +12,8 @@ namespace ProgrammingLanguage.Symbols
         Argument? Modifier;
 
         public string GetName() => "add";
+        public string GetClose() => "| [Variable] | [Value]";
+
         public string? Build(Argument[] arguments)
         {
             if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Value })

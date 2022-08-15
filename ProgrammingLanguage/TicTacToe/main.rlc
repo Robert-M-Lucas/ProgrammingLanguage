@@ -43,53 +43,53 @@ tag | loop;
 	goto | x_win;
 
 	tag | check_2;
-	equal | board.3 | 2 | check_3;
-	notequal | board.3 | board.4 | check_3;
-	notequal | board.4 | board.5 | check_3;
-	equal | board.3 | 0 | o_win;
-	goto | x_win;
+		equal | board.3 | 2 | check_3;
+		notequal | board.3 | board.4 | check_3;
+		notequal | board.4 | board.5 | check_3;
+		equal | board.3 | 0 | o_win;
+			goto | x_win;
 
 	tag | check_3;
-	equal | board.6 | 2 | check_4;
-	notequal | board.6 | board.7 | check_4;
-	notequal | board.7 | board.8 | check_4;
-	equal | board.6 | 0 | o_win;
-	goto | x_win;
+		equal | board.6 | 2 | check_4;
+		notequal | board.6 | board.7 | check_4;
+		notequal | board.7 | board.8 | check_4;
+		equal | board.6 | 0 | o_win;
+			goto | x_win;
 
 	tag | check_4;
-	equal | board.0 | 2 | check_5;
-	notequal | board.0 | board.3 | check_5;
-	notequal | board.3 | board.6 | check_5;
-	equal | board.0 | 0 | o_win;
-	goto | x_win;
+		equal | board.0 | 2 | check_5;
+		notequal | board.0 | board.3 | check_5;
+		notequal | board.3 | board.6 | check_5;
+		equal | board.0 | 0 | o_win;
+			goto | x_win;
 
 	tag | check_5;
-	equal | board.1 | 2 | check_6;
-	notequal | board.1 | board.4 | check_6;
-	notequal | board.4 | board.7 | check_6;
-	equal | board.1 | 0 | o_win;
-	goto | x_win;
+		equal | board.1 | 2 | check_6;
+		notequal | board.1 | board.4 | check_6;
+		notequal | board.4 | board.7 | check_6;
+		equal | board.1 | 0 | o_win;
+			goto | x_win;
 
 	tag | check_6;
-	equal | board.2 | 2 | check_7;
-	notequal | board.2 | board.5 | check_7;
-	notequal | board.5 | board.8 | check_7;
-	equal | board.2 | 0 | o_win;
-	goto | x_win;
+		equal | board.2 | 2 | check_7;
+		notequal | board.2 | board.5 | check_7;
+		notequal | board.5 | board.8 | check_7;
+		equal | board.2 | 0 | o_win;
+			goto | x_win;
 
 	tag | check_7;
-	equal | board.0 | 2 | check_8;
-	notequal | board.0 | board.4 | check_8;
-	notequal | board.4 | board.8 | check_8;
-	equal | board.0 | 0 | o_win;
-	goto | x_win;
+		equal | board.0 | 2 | check_8;
+		notequal | board.0 | board.4 | check_8;
+		notequal | board.4 | board.8 | check_8;
+		equal | board.0 | 0 | o_win;
+			goto | x_win;
 
 	tag | check_8;
-	equal | board.2 | 2 | after_check;
-	notequal | board.2 | board.4 | after_check;
-	notequal | board.4 | board.6 | after_check;
-	equal | board.2 | 0 | o_win;
-	goto | x_win;
+		equal | board.2 | 2 | after_check;
+		notequal | board.2 | board.4 | after_check;
+		notequal | board.4 | board.6 | after_check;
+		equal | board.2 | 0 | o_win;
+			goto | x_win;
 	
 	tag | after_check;
 

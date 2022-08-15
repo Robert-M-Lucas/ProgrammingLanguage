@@ -11,6 +11,7 @@ namespace ProgrammingLanguage.Symbols
         Argument? printValue;
 
         public string GetName() => "printcnl";
+        public string GetClose() => "| [Value]";
         public string? Build(Argument[] arguments)
         {
             if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Value })

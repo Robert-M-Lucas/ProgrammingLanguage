@@ -12,6 +12,7 @@ namespace ProgrammingLanguage.Symbols
         Argument? Arg1;
 
         public string GetName() => "setarr";
+        public string GetClose() => "| [Array Variable] | [Array Value]";
         public string? Build(Argument[] arguments)
         {
             if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.ArrayVariable, EvalType.ArrayValue })

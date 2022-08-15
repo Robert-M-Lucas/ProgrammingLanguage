@@ -12,6 +12,7 @@ namespace ProgrammingLanguage.Symbols
         Argument? Value;
 
         public string GetName() => "set";
+        public string GetClose() => "| [Variable] | [Value]";
         public string? Build(Argument[] arguments)
         {
             if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Value })

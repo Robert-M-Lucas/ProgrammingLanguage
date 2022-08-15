@@ -7,6 +7,10 @@
     "TicTacToe": {
       "commandName": "Project",
       "commandLineArgs": "\"C:\\Users\\rober\\Documents\\C# projects\\ProgrammingLanguage\\ProgrammingLanguage\\TicTacToe\\main.rlc\""
+    },
+    "Generate": {
+      "commandName": "Project",
+      "commandLineArgs": "gen"
     }
   }
 }

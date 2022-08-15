@@ -11,6 +11,7 @@ namespace ProgrammingLanguage.Symbols
         Argument Symbol;
 
         public string GetName() => "goto";
+        public string GetClose() => "| [Goto]";
 
         public string? Build(Argument[] arguments)
         {

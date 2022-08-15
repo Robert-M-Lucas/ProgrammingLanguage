@@ -11,6 +11,7 @@ namespace ProgrammingLanguage.Symbols
         Argument Object;
 
         public string GetName() => "input";
+        public string GetClose() => "| [Variable]";
         public string? Build(Argument[] arguments)
         {
             if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable })) return "Arguments incorrectly formatted";

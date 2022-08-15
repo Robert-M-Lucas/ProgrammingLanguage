@@ -13,6 +13,7 @@ namespace ProgrammingLanguage.Symbols
         Argument? Symbol;
 
         public string GetName() => "greater";
+        public string GetClose() => "| [Value] | [Value] | [Goto]";
         public string? Build(Argument[] arguments)
         {
             if (!Argument.MatchesEvalPattern(arguments, new EvalType[] { EvalType.Variable, EvalType.Variable, EvalType.Symbol }) &&

@@ -9,6 +9,7 @@ namespace ProgrammingLanguage
     internal interface Symbol
     {
         public string GetName();
+        public string GetClose();
 
         public string? Build(Argument[] arguments);
 
