@@ -91,6 +91,10 @@ namespace ProgrammingLanguage
             {
                 Console.WriteLine("Warning - A variable name starts with '@'. '@' is a character that forces the processor to treat the following string as a literal so this variable can never be referenced");
             }
+            if (name == "length")
+            {
+                Console.WriteLine("Warning - A variable name is 'length'. This will prevent array.length from being properly used");
+            }
             else if (int.TryParse(name, out _))
             {
                 Console.WriteLine("Warning - A variable name is a number, this will prevent that number from being used unless you prefix an '@' symbol");

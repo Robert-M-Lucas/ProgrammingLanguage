@@ -1,6 +1,5 @@
 ﻿arr | target_arr | @Loaded; ;; Target text
 arr | current_arr | 6; ;; Current text
-let | arr_length | 6; ;; Target text length
 
 let | current_letter | 0;
 let | iter_per_letter | 20;
@@ -16,7 +15,7 @@ tag | loop;
     set | i | -1;
     tag | repeat;
         add | i | 1;
-        equal | i | arr_length | after_repeat;
+        equal | i | target_arr.length | after_repeat;
 
         less | i | current_letter | set_target; ;; If past letter set to target
 
@@ -41,6 +40,6 @@ tag | loop;
 
     ;; Move to next letter
     add | current_letter | 1;
-    greater | arr_length | current_letter | loop;
+    greater | target_arr.length | current_letter | loop;
 
 printcnl | target_arr;

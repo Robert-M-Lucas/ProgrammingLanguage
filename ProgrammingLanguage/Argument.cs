@@ -131,6 +131,11 @@
                         Value = symbolTables[current_table].TempArrayNames[path[0]].Item1;
                         Value2 = symbolTables[current_table].TempObjectNames[path[1]];
                     }
+                    else if (path[1] == "length") {
+                        ArgumentType = ArgType.Constant;
+                        EvalueType = EvalType.Value;
+                        Value = symbolTables[current_table].TempArrayNames[path[0]].Item2;
+                    }
                     else
                     {
                         ArgumentType = ArgType.Object;
