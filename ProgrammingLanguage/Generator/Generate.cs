@@ -71,6 +71,9 @@ namespace ProgrammingLanguage.Generator
 		},
 		{
 			""include"": ""#functions""
+		},
+{
+			""include"": ""#comments""
 		}
 	],
 	""repository"": {
@@ -85,13 +88,22 @@ namespace ProgrammingLanguage.Generator
 				""name"": ""support.function"",
 				""match"": ""\\b(" + string.Join('|', symbol_list) + @")\\b""
 			}]
-		}
+		},
+        ""comments"": {
+            ""patterns"": [{
+                ""name"": ""comment.line.number-sign.xpp"",
+                ""match"": "";;.*""
+            }]
+        }
 	},
 	""scopeName"": ""source.rlc""
 }";
             File.WriteAllText(Path.Join(path, "syntaxes\\rlc.tmLanguage.json"), tmLanguageString);
 
 			string lang_config_string = @"{
+    ""comments"": {
+		""lineComment"": "";;"",
+	},
     ""autoClosingPairs"": [";
 
 			for (int i = 0; i < kword_list.Count; i++)

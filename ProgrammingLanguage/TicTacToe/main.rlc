@@ -11,31 +11,29 @@ let | iter | 0;
 let | input_value | 0;
 
 tag | loop;
-
-	printc | @Turn:;
-	printc | 32;
+	;; Print current turn
+	printc | @Turn:\_;
 
 	equal | turn | 0 | util.show_o_nl;
 	equal | turn | 1 | util.show_x_nl;
 
+	;; Print board
 	goto | print_board;
 	tag | after_print_board;
 
+	;; Get input
 	tag | ask_input;
+		printc | @Enter\_move:\_;
+		input | input_value;
 
-	printc | @Enter;
-	printc | 32;
-	printc | @move:;
-	printc | 32;
-	input | input_value;
+		less | input_value | 1 | ask_input;
+		greater | input_value | 9 | ask_input;
+		sub | input_value | 1;
+		notequal | board.input_value | 2 | ask_input;
 
-	less | input_value | 1 | ask_input;
-	greater | input_value | 9 | ask_input;
-	sub | input_value | 1;
-	notequal | board.input_value | 2 | ask_input;
+		set | board.input_value | turn;
 
-	set | board.input_value | turn;
-
+	;; Checks for game end
 	equal | board.0 | 2 | check_2;
 	notequal | board.0 | board.1 | check_2;
 	notequal | board.1 | board.2 | check_2;
@@ -97,27 +95,26 @@ tag | loop;
 
 goto | loop;
 
+;; On O win
 tag | o_win;
-	printc | @O;
-	printc | 32;
-	printcnl | @wins!;
+	printcnl | @O\_wins!;
 	invert | game_over;
 	goto | print_board;
 
+;; On X win
 tag | x_win;
-	printc | @X;
-	printc | 32;
-	printcnl | @wins!;
+	printcnl | @X\_wins!;
 	invert | game_over;
 	goto | print_board;
 
+;; Print board
 tag | print_board;
 	set | y_iter | 0;
 	set | iter | 0;
 	tag | row_loop;
 		set | x_iter | 0;
 		tag | column_loop;
-			printc | 32;
+			printc | @\_;
 			equal | board.iter | 2 | print_num;
 				equal | board.iter | 0 | util.show_o;
 				equal | board.iter | 1 | util.show_x;
@@ -130,11 +127,11 @@ tag | print_board;
 				sub | iter | 1;
 			tag | after_print_num;
 
-			printc | 32;
+			printc | @\_;
 			add | x_iter | 1;
 			add | iter | 1;
 			equal | x_iter | 3 | exit_column_loop;
-			printc | 124;
+			printc | @\p;
 
 		goto | column_loop;
 
@@ -142,13 +139,14 @@ tag | print_board;
 
 			add | y_iter | 1;
 			equal | y_iter | 3 | exit_print;
-			printcnl | 32;
+			printcnl | @\_;
 			printcnl | @-----------;
 
 	goto | row_loop;
 
 	tag | exit_print;
-	printcnl | 32;
+	printcnl | @\_;
+	;; If printing for final time after game over
 	if | game_over | done;
 	goto | after_print_board;
 

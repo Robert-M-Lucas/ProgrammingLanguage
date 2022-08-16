@@ -62,6 +62,40 @@
                 current_table = 0;
                 file_names = null;
                 input = input.Substring(1);
+                string temp_input = "";
+                bool escaped = false;
+                foreach (char c in input)
+                {
+                    if (c == '\\' && !escaped) escaped = true;
+                    else
+                    {
+                        if (escaped)
+                        {
+                            switch (c)
+                            {
+                                case '\\':
+                                    temp_input += "\\";
+                                    break;
+                                case '_':
+                                    temp_input += " ";
+                                    break;
+                                case 'p':
+                                    temp_input += "|";
+                                    break;
+                                default:
+                                    temp_input += "\\" + c;
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            temp_input += c;
+                        }
+                        escaped = false;
+                    }
+
+                }
+                input = temp_input;
             }
 
             if (symbolTables is not null && symbolTables[current_table].TempObjectNames.ContainsKey(input))

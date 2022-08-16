@@ -134,6 +134,27 @@ namespace ProgrammingLanguage
             try
             {
                 file_string = File.ReadAllText(file_path);
+                string new_file_string = "";
+
+                int comment = 0;
+                foreach (char c in file_string)
+                {
+                    if (comment == 2)
+                    {
+                        if (c == '\n') comment = 0;
+                    }
+                    else
+                    {
+                        if (c == ';') comment++;
+                        else comment = 0;
+                        new_file_string += c;
+
+                        if (comment == 2) new_file_string = new_file_string.Substring(0, new_file_string.Length - 2);
+                    }
+                    
+                }
+                file_string = new_file_string;
+
                 file_string = file_string.Replace("\n", "");
                 file_string = file_string.Replace("\r", "");
                 file_string = file_string.Replace("\t", "");
