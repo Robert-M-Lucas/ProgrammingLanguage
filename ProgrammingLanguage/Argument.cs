@@ -82,6 +82,12 @@
                                 case 'p':
                                     temp_input += "|";
                                     break;
+                                case 's':
+                                    temp_input += ";";
+                                    break;
+                                case 'n':
+                                    temp_input += "\n";
+                                    break;
                                 default:
                                     temp_input += "\\" + c;
                                     break;
