@@ -50,7 +50,7 @@ namespace ProgrammingLanguage.Generator
             Console.WriteLine("Creating JSON...");
 
             List<string> kword_list = new List<string> { "import", "let", "arr", "tag" };
-            List<string> kword_close_list = new List<string> { "| [File Name]", "| [Var Name] | [Value]", "| [Arr Name] | [Value]", "| [Tag Name]]" };
+            List<string> kword_close_list = new List<string> { "| [File Name]", "| [Var Name] | [Value]", "| [Arr Name] | [Value]", "| [Tag Name]" };
             List<string> symbol_list = new List<string> {  };
 			List<string> symbol_close_list = new List<string> { };
 

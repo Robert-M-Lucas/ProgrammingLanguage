@@ -255,7 +255,7 @@
             switch (arg.ArgumentType)
             {
                 case ArgType.Array:
-                    return interpreter.CurrentSymbolTable.Objects[arg.Value..^(arg.Value+arg.Value2)];
+                    return interpreter.CurrentSymbolTable.Objects[arg.Value..(arg.Value+arg.Value2)];
                 case ArgType.ArrayConstant:
                     if (arg.ValueArr is null) throw new NullReferenceException();
                     return arg.ValueArr[..];

@@ -6,11 +6,15 @@
     },
     "TicTacToe": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\rober\\Documents\\C# projects\\ProgrammingLanguage\\ProgrammingLanguage\\TicTacToe\\main.rlc\""
+      "commandLineArgs": "\"C:\\Users\\rober\\Documents\\C# projects\\ProgrammingLanguage\\ProgrammingLanguage\\RLC Code\\TicTacToe\\main.rlc\""
     },
     "Generate": {
       "commandName": "Project",
       "commandLineArgs": "gen"
+    },
+    "Loading": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\rober\\Documents\\C# projects\\ProgrammingLanguage\\ProgrammingLanguage\\RLC Code\\Loading Generator\\main.rlc\""
     }
   }
 }

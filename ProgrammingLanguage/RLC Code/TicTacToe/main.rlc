@@ -92,17 +92,19 @@ tag | loop;
 	tag | after_check;
 
 	invert | turn;
-
+	printcnl | @;
 goto | loop;
 
 ;; On O win
 tag | o_win;
+	printcnl | @;
 	printcnl | @O\_wins!;
 	invert | game_over;
 	goto | print_board;
 
 ;; On X win
 tag | x_win;
+	printcnl | @;
 	printcnl | @X\_wins!;
 	invert | game_over;
 	goto | print_board;

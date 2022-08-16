@@ -1,0 +1,46 @@
+﻿arr | target_arr | @Loaded; ;; Target text
+arr | current_arr | 6; ;; Current text
+let | arr_length | 6; ;; Target text length
+
+let | current_letter | 0;
+let | iter_per_letter | 20;
+let | curr_iter_per_letter | 0;
+let | delay | 1;
+let | temp_rand | 0;
+
+let | i | 0;
+
+tag | loop;
+    wait | delay;
+
+    set | i | -1;
+    tag | repeat;
+        add | i | 1;
+        equal | i | arr_length | after_repeat;
+
+        less | i | current_letter | set_target; ;; If past letter set to target
+
+        ;; Random letter
+        random | temp_rand | 1 | 500;
+        set | current_arr.i | temp_rand;
+        goto | repeat;
+
+        ;; Target letter
+        tag | set_target;
+            set | current_arr.i | target_arr.i;
+            goto | repeat;
+
+    tag | after_repeat;
+
+    printcnl | current_arr;
+
+    ;; Repeat for letter
+    add | curr_iter_per_letter | 1;
+    less | curr_iter_per_letter | iter_per_letter | loop;
+    set | curr_iter_per_letter | 0;
+
+    ;; Move to next letter
+    add | current_letter | 1;
+    greater | arr_length | current_letter | loop;
+
+printcnl | target_arr;

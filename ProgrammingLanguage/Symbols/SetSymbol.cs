@@ -27,6 +27,10 @@ namespace ProgrammingLanguage.Symbols
 
         public void Run(Interpreter interpreter)
         {
+            /*
+            Console.WriteLine("*" + Argument.EvaluateObjectArg(Object, interpreter));
+            Console.WriteLine("*" + Argument.EvaluateIntArg(Value, interpreter));
+            */
             interpreter.CurrentSymbolTable.Objects[Argument.EvaluateObjectArg(Object, interpreter)] = Argument.EvaluateIntArg(Value, interpreter);
             interpreter.SymbolID += 1;
         }
