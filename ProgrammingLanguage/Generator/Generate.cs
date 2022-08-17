@@ -46,10 +46,11 @@ namespace ProgrammingLanguage.Generator
         public static void Gen()
         {
             Console.Write("Enter path to extension base folder: ");
-            string path = Console.ReadLine();
+            string path = Console.ReadLine()??"";
             Console.WriteLine("Creating JSON...");
 
             List<string> kword_list = new List<string> { "import", "let", "arr", "tag" };
+            List<string> extra_kword_list = new List<string> { "push" };
             List<string> kword_close_list = new List<string> { "| [File Name]", "| [Var Name] | [Value]", "| [Arr Name] | [Value]", "| [Tag Name]" };
             List<string> symbol_list = new List<string> {  };
 			List<string> symbol_close_list = new List<string> { };
@@ -80,7 +81,7 @@ namespace ProgrammingLanguage.Generator
 		""keywords"": {
 			""patterns"": [{
 				""name"": ""keyword.control.rlc"",
-				""match"": ""\\b(" + string.Join('|', kword_list) + @")\\b""
+				""match"": ""\\b(" + string.Join('|', kword_list) + '|' + string.Join('|', extra_kword_list) + @")\\b""
 			}]
 		},
 		""functions"": {
@@ -106,6 +107,7 @@ namespace ProgrammingLanguage.Generator
 	},
     ""autoClosingPairs"": [";
 
+            /*
 			for (int i = 0; i < kword_list.Count; i++)
 			{
 				lang_config_string += "\n\t\t{ \"open\":\"" + kword_list[i] + " \", \"close\": \"" + kword_close_list[i] + ";\" },";  
@@ -114,6 +116,7 @@ namespace ProgrammingLanguage.Generator
             {
                 lang_config_string += "\n\t\t{ \"open\":\"" + symbol_list[i] + " \", \"close\": \"" + symbol_close_list[i] + ";\" },";
             }
+            */
 
             lang_config_string += "\n\t]\n}";
 
@@ -121,7 +124,7 @@ namespace ProgrammingLanguage.Generator
 
 			Console.Write("Enter windows user: ");
 
-			string user = Console.ReadLine();
+			string user = Console.ReadLine()??"";
 
             Console.WriteLine("Installing extension...");
 
@@ -129,6 +132,7 @@ namespace ProgrammingLanguage.Generator
 
 			if (Directory.Exists(extension_path + "\\rlc-lang"))
 			{
+                Console.WriteLine(extension_path + "\\rlc-lang");
 				Directory.Delete(extension_path + "\\rlc-lang", true);
 			}
 

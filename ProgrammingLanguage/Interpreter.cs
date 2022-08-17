@@ -90,6 +90,21 @@ namespace ProgrammingLanguage
             tableHierachy.Add(new Tuple<int, int>(SymbolTableID, SymbolID));
         }
 
+        public bool DropHierachy()
+        {
+            if (tableHierachy.Count > 0)
+            {
+                SymbolID = tableHierachy[tableHierachy.Count - 1].Item2;
+                SymbolTableID = tableHierachy[tableHierachy.Count - 1].Item1;
+                tableHierachy.RemoveAt(tableHierachy.Count - 1);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public void Run()
         {
             if (symbolTables is null) { Console.WriteLine("> No symbol table"); return; }
@@ -119,16 +134,7 @@ namespace ProgrammingLanguage
                 }
                 if (!force_running || !running) break;
 
-                if (tableHierachy.Count > 0)
-                {
-                    SymbolID = tableHierachy[tableHierachy.Count - 1].Item2;
-                    SymbolTableID = tableHierachy[tableHierachy.Count - 1].Item1;
-                    tableHierachy.RemoveAt(tableHierachy.Count - 1);
-                }
-                else
-                {
-                    break;
-                }
+                if (!DropHierachy()) break;
             }
 
             s.Stop();

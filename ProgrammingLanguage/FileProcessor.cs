@@ -302,7 +302,7 @@ namespace ProgrammingLanguage
                                 }
                                 catch (ProcessingException e)
                                 {
-                                    throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "{e.Message}");
+                                    throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, $"{e.Message}");
                                 }
                             }
                             

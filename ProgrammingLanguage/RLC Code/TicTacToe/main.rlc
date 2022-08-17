@@ -14,8 +14,8 @@ tag | loop;
 	;; Print current turn
 	printc | @Turn:\_;
 
-	equal | turn | 0 | util.show_o_nl;
-	equal | turn | 1 | util.show_x_nl;
+	equal | turn | 0 | util.show_o_nl.push;
+	equal | turn | 1 | util.show_x_nl.push;
 
 	;; Print board
 	goto | print_board;
@@ -99,6 +99,7 @@ goto | loop;
 tag | o_win;
 	printcnl | @;
 	printcnl | @O\_wins!;
+	printcnl | @;
 	invert | game_over;
 	goto | print_board;
 
@@ -106,6 +107,7 @@ tag | o_win;
 tag | x_win;
 	printcnl | @;
 	printcnl | @X\_wins!;
+	printcnl | @;
 	invert | game_over;
 	goto | print_board;
 
@@ -118,8 +120,8 @@ tag | print_board;
 		tag | column_loop;
 			printc | @\_;
 			equal | board.iter | 2 | print_num;
-				equal | board.iter | 0 | util.show_o;
-				equal | board.iter | 1 | util.show_x;
+				equal | board.iter | 0 | util.show_o.push;
+				equal | board.iter | 1 | util.show_x.push;
 					
 				goto | after_print_num;
 

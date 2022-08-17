@@ -19,6 +19,7 @@
         VariableArrayReference = 6
     }
 
+    /*
     struct IntOrArr
     {
         public int Int = 0;
@@ -37,11 +38,27 @@
             IsInt = false;
         }
     }
+    */
+
+    internal struct SymbolRef
+    {
+        public int TableID;
+        public int SymbolID;
+        public bool Push;
+
+        public SymbolRef (int table_id, int symbol_id, bool push)
+        {
+            TableID = table_id;
+            SymbolID = symbol_id;
+            Push = push;
+        }
+    }
 
     internal class Argument
     {
         public int Value = -1;
         public int Value2 = -1;
+        public int Value3 = -1;
         public int[]? ValueArr;
 
         public ArgType ArgumentType;
@@ -157,7 +174,18 @@
                     }
                     catch (KeyNotFoundException)
                     {
-                        throw new ProcessingException($"File {path[0]} not found");
+                        try
+                        {
+                            Value = symbolTables[current_table].TempSymbolNames[path[0]];
+                            if (path[1] == "push") Value3 = 1;
+                            ArgumentType = ArgType.Symbol;
+                            EvalueType = EvalType.Symbol;
+                            return;
+                        }
+                        catch (KeyNotFoundException)
+                        {
+                            throw new ProcessingException($"File or symbol {path[0]} not found");
+                        }
                     }
 
                     if (path[1] == "start" && !symbolTables[Value2].TempSymbolNames.ContainsKey("start"))
@@ -175,6 +203,9 @@
                             throw new ProcessingException($"Tag {path[1]} not found");
                         }
                     }
+
+                    if (path.Length == 3 && path[2] == "push") Value3 = 1;
+
                     ArgumentType = ArgType.ExternalSymbol;
                     EvalueType = EvalType.Symbol;
                 } 
@@ -285,27 +316,24 @@
                     throw new FormatException($"Arg {arg.ArgumentType} can't be treated as arr reference");
             }
         }
-        public static Tuple<int, int> EvaluateSymbolArg(Argument arg, Interpreter interpreter)
+        public static SymbolRef EvaluateSymbolArg(Argument arg, Interpreter interpreter)
         {
             switch (arg.ArgumentType)
             {
                 case ArgType.Symbol:
-                    return new Tuple<int, int>(interpreter.SymbolTableID, arg.Value);
+                    return new SymbolRef(interpreter.SymbolTableID, arg.Value, arg.Value3 == 1);
                 case ArgType.ExternalSymbol:
-                    return new Tuple<int, int>(arg.Value2, arg.Value);
+                    return new SymbolRef(arg.Value2, arg.Value, arg.Value3 == 1);
                 default:
                     throw new FormatException($"Arg {arg.ArgumentType} can't be treated as symbol");
             }
         }
 
-        public static void ApplySymbol(Tuple<int, int> symbol, Interpreter interpreter)
+        public static void ApplySymbol(SymbolRef symbol, Interpreter interpreter)
         {
-            if (symbol.Item1 != interpreter.SymbolTableID)
-            {
-                interpreter.PushHierachy();
-                interpreter.SymbolTableID = symbol.Item1;
-            }
-            interpreter.SymbolID = symbol.Item2;
+            if (symbol.Push) interpreter.PushHierachy();
+            interpreter.SymbolTableID = symbol.TableID;
+            interpreter.SymbolID = symbol.SymbolID;
         }
     }
 }

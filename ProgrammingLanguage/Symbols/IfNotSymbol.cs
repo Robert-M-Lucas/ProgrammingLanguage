@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProgrammingLanguage.Symbols
 {
-    internal class IfSymbol : Symbol
+    internal class IfNotSymbol : Symbol
     {
         Argument? Value1;
         Argument? Symbol;
@@ -26,7 +26,7 @@ namespace ProgrammingLanguage.Symbols
 
         public void Run(Interpreter interpreter)
         {
-            if (Argument.EvaluateIntArg(Value1, interpreter) != 0) { Argument.ApplySymbol(Argument.EvaluateSymbolArg(Symbol, interpreter), interpreter); }
+            if (Argument.EvaluateIntArg(Value1, interpreter) == 0) { Argument.ApplySymbol(Argument.EvaluateSymbolArg(Symbol, interpreter), interpreter); }
             else { interpreter.SymbolID++; }
         }
     }

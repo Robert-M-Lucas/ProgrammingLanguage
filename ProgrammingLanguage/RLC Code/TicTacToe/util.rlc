@@ -1,13 +1,12 @@
 ﻿tag | show_o_nl;
 	printcnl | @O;
-	goto | done;
+	break;
 tag | show_x_nl;
 	printcnl | @X;
-	goto | done;
+	break;
 tag | show_o;
 	printc | @O;
-	goto | done;
+	break;
 tag | show_x;
 	printc | @X;
-	goto | done;
-tag | done;
+	break;

@@ -1,0 +1,9 @@
+﻿
+goto | b;
+tag | a;
+    printnl | 1;
+    break;
+tag | b;
+
+goto | a.push;
+goto | a.push;
