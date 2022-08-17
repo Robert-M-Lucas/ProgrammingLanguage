@@ -1,6 +1,6 @@
 # ProgrammingLanguage
 
-Currently migrating documentation to GitHub wiki
+Check out the GitHub wiki for documentation
 
 ## VSCode extension
 
