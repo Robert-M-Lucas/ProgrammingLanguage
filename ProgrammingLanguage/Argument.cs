@@ -54,6 +54,7 @@
         }
     }
 
+    [Serializable]
     internal class Argument
     {
         public int Value = -1;

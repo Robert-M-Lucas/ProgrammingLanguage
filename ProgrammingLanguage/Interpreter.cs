@@ -36,9 +36,22 @@ namespace ProgrammingLanguage
 
         public Interpreter(string base_file_path)
         {
-            if (!File.Exists(base_file_path)) { Console.WriteLine("> Base file not found"); return; }
-
             baseFilePath = base_file_path;
+
+            if (baseFilePath[^3..] == "rlc")
+            {
+                if (!File.Exists(base_file_path)) { Console.WriteLine("> Base file not found"); return; }
+                Process();
+            }
+            else
+            {
+                symbolTables = Compiler.Decompile(base_file_path);
+            }
+        }
+
+        public Interpreter()
+        {
+
         }
 
         public void Process()
@@ -48,8 +61,11 @@ namespace ProgrammingLanguage
             try
             {
                 Console.WriteLine("> Processing started");
+                Stopwatch s = new Stopwatch();
+                s.Start();
                 symbolTables = new FileProcessor(baseFilePath).SymbolTables;
-                Console.WriteLine("> Processing succeeded");
+                s.Stop();
+                Console.WriteLine($"> Processing succeeded in {s.ElapsedMilliseconds}ms");
             }
             catch (ProcessingException e)
             {

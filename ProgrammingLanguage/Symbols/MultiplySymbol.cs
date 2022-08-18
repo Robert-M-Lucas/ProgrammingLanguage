@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ProgrammingLanguage.Symbols
 {
+    [Serializable]
     internal class MultiplySymbol : Symbol
     {
         Argument? Object;
@@ -28,6 +30,12 @@ namespace ProgrammingLanguage.Symbols
         {
             interpreter.CurrentSymbolTable.Objects[Argument.EvaluateObjectArg(Object, interpreter)] *= (int)(Argument.EvaluateIntArg(Modifier, interpreter));
             interpreter.SymbolID++;
+        }
+
+        public void Serialize(Stream s)
+        {
+#pragma warning disable SYSLIB0011
+            new BinaryFormatter().Serialize(s, this);
         }
     }
 }

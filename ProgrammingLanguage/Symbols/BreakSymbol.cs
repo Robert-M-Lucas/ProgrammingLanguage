@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ProgrammingLanguage.Symbols
 {
+    [Serializable]
     internal class BreakSymbol : Symbol
     {
         public string GetName() => "break";
@@ -20,6 +22,12 @@ namespace ProgrammingLanguage.Symbols
         public void Run(Interpreter interpreter)
         {
             interpreter.DropHierachy();
+        }
+
+        public void Serialize(Stream s)
+        {
+#pragma warning disable SYSLIB0011
+            new BinaryFormatter().Serialize(s, this);
         }
     }
 }

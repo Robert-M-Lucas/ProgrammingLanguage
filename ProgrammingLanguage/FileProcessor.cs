@@ -113,40 +113,33 @@ namespace ProgrammingLanguage
 
         public string ProcessFileString(string fileString)
         {
-            try
-            {
-                string new_file_string = "";
+            string new_file_string = "";
 
-                int comment = 0;
-                foreach (char c in fileString)
+            int comment = 0;
+            foreach (char c in fileString)
+            {
+                if (comment == 2)
                 {
-                    if (comment == 2)
-                    {
-                        if (c == '\n') comment = 0;
-                    }
-                    else
-                    {
-                        if (c == ';') comment++;
-                        else comment = 0;
-                        new_file_string += c;
-
-                        if (comment == 2) new_file_string = new_file_string.Substring(0, new_file_string.Length - 2);
-                    }
-
+                    if (c == '\n') comment = 0;
                 }
-                fileString = new_file_string;
+                else
+                {
+                    if (c == ';') comment++;
+                    else comment = 0;
+                    new_file_string += c;
 
-                fileString = fileString.Replace("\n", "");
-                fileString = fileString.Replace("\r", "");
-                fileString = fileString.Replace("\t", "");
-                fileString = fileString.Replace(" ", "");
-                // file_string = file_string.ToLower();
-                return fileString;
+                    if (comment == 2) new_file_string = new_file_string.Substring(0, new_file_string.Length - 2);
+                }
+
             }
-            catch (IOException e)
-            {
-                throw new ProcessingException($"Error reading '{file_path}' - {e.Message}");
-            }
+            fileString = new_file_string;
+
+            fileString = fileString.Replace("\n", "");
+            fileString = fileString.Replace("\r", "");
+            fileString = fileString.Replace("\t", "");
+            fileString = fileString.Replace(" ", "");
+            // file_string = file_string.ToLower();
+            return fileString;
         }
 
         public int ProcessFile(string file_path, string calling_path)
@@ -175,8 +168,14 @@ namespace ProgrammingLanguage
 
             string file_string;
 
-             file_string = ProcessFileString(File.ReadAllText(file_path));
-                
+            try
+            {
+                file_string = ProcessFileString(File.ReadAllText(file_path));
+            }
+            catch (IOException e)
+            {
+                throw new ProcessingException($"Error reading '{file_path}' - {e.Message}");
+            }
 
             string[] file_split = file_string.Split(';');
             if (file_split.Length > 0 && file_split[file_split.Length - 1] == string.Empty)

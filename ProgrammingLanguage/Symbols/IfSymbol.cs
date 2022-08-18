@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ProgrammingLanguage.Symbols
 {
+    [Serializable]
     internal class IfSymbol : Symbol
     {
         Argument? Value1;
@@ -28,6 +30,12 @@ namespace ProgrammingLanguage.Symbols
         {
             if (Argument.EvaluateIntArg(Value1, interpreter) != 0) { Argument.ApplySymbol(Argument.EvaluateSymbolArg(Symbol, interpreter), interpreter); }
             else { interpreter.SymbolID++; }
+        }
+
+        public void Serialize(Stream s)
+        {
+#pragma warning disable SYSLIB0011
+            new BinaryFormatter().Serialize(s, this);
         }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ProgrammingLanguage.Symbols
 {
+    [Serializable]
     internal class ExitSymbol : Symbol
     {
         public string GetName() => "exit";
@@ -21,6 +23,12 @@ namespace ProgrammingLanguage.Symbols
         {
             interpreter.running = false;
             interpreter.SymbolID += 1;
+        }
+
+        public void Serialize(Stream s)
+        {
+#pragma warning disable SYSLIB0011
+            new BinaryFormatter().Serialize(s, this);
         }
     }
 }

@@ -19,6 +19,14 @@
     "PushTest": {
       "commandName": "Project",
       "commandLineArgs": "\"C:\\Users\\rober\\Documents\\C# projects\\ProgrammingLanguage\\ProgrammingLanguage\\RLC Code\\PushTest\\main.rlc\""
+    },
+    "Tic Tac Toe Compile": {
+      "commandName": "Project",
+      "commandLineArgs": "compile\r\n\"C:\\Users\\rober\\Documents\\C# projects\\ProgrammingLanguage\\ProgrammingLanguage\\RLC Code\\TicTacToe\\main.rlc\""
+    },
+    "Tic Tac Toe Decompile": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\rober\\Documents\\C# projects\\ProgrammingLanguage\\ProgrammingLanguage\\RLC Code\\TicTacToe\\Compiled\""
     }
   }
 }

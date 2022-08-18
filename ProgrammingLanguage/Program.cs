@@ -13,10 +13,18 @@ class Program
                 Generate.Gen();
                 return;
             }
-            interpreter = new Interpreter(args[0]); 
+            else if (args[0] == "compile")
+            {
+                Compiler.Compile(args[1]);
+                return;
+            }
+            else
+            {
+                interpreter = new Interpreter(args[0]);
+            }
         }
         else { interpreter = new Interpreter(@"code.rlc"); }
-        interpreter.Process();
+        
         interpreter.Run();
     }
 }

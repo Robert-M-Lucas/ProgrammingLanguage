@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ProgrammingLanguage.Symbols
 {
+    [Serializable]
     internal class PrintNLSymbol : Symbol
     {
         Argument? printValue;
@@ -28,6 +30,12 @@ namespace ProgrammingLanguage.Symbols
             Interpreter.Print(Argument.EvaluateIntArg(printValue, interpreter).ToString());
             Interpreter.PrintLine("");
             interpreter.SymbolID += 1;
+        }
+
+        public void Serialize(Stream s)
+        {
+#pragma warning disable SYSLIB0011
+            new BinaryFormatter().Serialize(s, this);
         }
     }
 }

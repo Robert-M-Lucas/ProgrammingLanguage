@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace ProgrammingLanguage.Symbols
 {
+    [Serializable]
     internal class AbsSymbol : Symbol
     {
         Argument? Object;
@@ -27,6 +30,12 @@ namespace ProgrammingLanguage.Symbols
             if (interpreter.CurrentSymbolTable.Objects[obj_index] < 0) { interpreter.CurrentSymbolTable.Objects[obj_index] *= -1; }
             
             interpreter.SymbolID++;
+        }
+
+        public void Serialize(Stream s)
+        {
+#pragma warning disable SYSLIB0011
+            new BinaryFormatter().Serialize(s, this);
         }
     }
 }

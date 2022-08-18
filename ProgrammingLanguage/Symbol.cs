@@ -14,5 +14,7 @@ namespace ProgrammingLanguage
         public string? Build(Argument[] arguments);
 
         public void Run(Interpreter interpreter);
+
+        public void Serialize(Stream stream);
     }
 }
