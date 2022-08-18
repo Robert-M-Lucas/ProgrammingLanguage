@@ -18,9 +18,9 @@ namespace ProgrammingLanguage
         public static ProcessingException Build(ProcessingExceptionType type, FileProcessor fileProcessor, string exceptionMessage)
         {
             string exception_string = "";
-            for (int i = 0; i < fileProcessor.call_stack.Count; i++)
+            for (int i = 0; i < fileProcessor.CallStack.Count; i++)
             {
-                exception_string += $"In '{fileProcessor.call_stack[i]}' [{fileProcessor.line_no[i]}]\n";
+                exception_string += $"In '{fileProcessor.CallStack[i]}' [{fileProcessor.LineNo[i]}]\n";
             }
             switch (type)
             {
@@ -47,14 +47,16 @@ namespace ProgrammingLanguage
 
     internal class FileProcessor
     {
-        public List<string> call_stack = new List<string>();
-        public List<int> line_no = new List<int>();
+        public List<string> CallStack = new List<string>();
+        public List<int> LineNo = new List<int>();
 
         public List<SymbolTable> SymbolTables = new List<SymbolTable>();
-        Dictionary<string, int> FileNames = new Dictionary<string, int>();
-        List<string> pastFiles = new List<string>();
-        List<string> pastFileNames = new List<string>();
-        Dictionary<string, Type> SymbolNames = new Dictionary<string, Type>();
+
+        Dictionary<string, int> file_names = new Dictionary<string, int>();
+        List<string> past_files = new List<string>();
+        List<string> past_file_names = new List<string>();
+
+        Dictionary<string, Type> symbol_names = new Dictionary<string, Type>();
 
         public FileProcessor(string base_file_path)
         {
@@ -69,7 +71,7 @@ namespace ProgrammingLanguage
                  .Where(mytype => mytype.GetInterfaces().Contains(typeof(Symbol))))
             {
                 Symbol symbol = (Symbol)(Activator.CreateInstance(mytype) ?? throw new NullReferenceException());
-                SymbolNames[symbol.GetName()] = symbol.GetType();
+                symbol_names[symbol.GetName()] = symbol.GetType();
             }
         }
 
@@ -109,39 +111,14 @@ namespace ProgrammingLanguage
             }
         }
 
-        public int ProcessFile(string file_path, string calling_path)
+        public string ProcessFileString(string fileString)
         {
-            if (Path.GetDirectoryName(file_path) == string.Empty) { file_path = Path.Join(Path.GetDirectoryName(calling_path), file_path); }
-            call_stack.Add(file_path);
-            line_no.Add(0);
-            string file_name = Path.GetFileName(file_path);
-
-            if (pastFiles.Contains(file_path))
-            {
-                throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ImportError, this, $"Circular import in '{calling_path}' trying to import '{file_path}'");
-            }
-            else if (pastFileNames.Contains(file_name))
-            {
-                throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ImportError, this, $"Error importing '{file_path}' - name already used");
-            }
-
-            pastFiles.Add(file_path);
-            pastFileNames.Add(file_name);
-
-            SymbolTables.Add(new SymbolTable());
-            int current_symbol_table = SymbolTables.Count - 1;
-
-            FileNames.Add(file_name, current_symbol_table); // -1 index denotes table name
-
-            string file_string;
-
             try
             {
-                file_string = File.ReadAllText(file_path);
                 string new_file_string = "";
 
                 int comment = 0;
-                foreach (char c in file_string)
+                foreach (char c in fileString)
                 {
                     if (comment == 2)
                     {
@@ -155,20 +132,51 @@ namespace ProgrammingLanguage
 
                         if (comment == 2) new_file_string = new_file_string.Substring(0, new_file_string.Length - 2);
                     }
-                    
-                }
-                file_string = new_file_string;
 
-                file_string = file_string.Replace("\n", "");
-                file_string = file_string.Replace("\r", "");
-                file_string = file_string.Replace("\t", "");
-                file_string = file_string.Replace(" ", "");
+                }
+                fileString = new_file_string;
+
+                fileString = fileString.Replace("\n", "");
+                fileString = fileString.Replace("\r", "");
+                fileString = fileString.Replace("\t", "");
+                fileString = fileString.Replace(" ", "");
                 // file_string = file_string.ToLower();
+                return fileString;
             }
             catch (IOException e)
             {
                 throw new ProcessingException($"Error reading '{file_path}' - {e.Message}");
             }
+        }
+
+        public int ProcessFile(string file_path, string calling_path)
+        {
+            if (Path.GetDirectoryName(file_path) == string.Empty) { file_path = Path.Join(Path.GetDirectoryName(calling_path), file_path); }
+            CallStack.Add(file_path);
+            LineNo.Add(0);
+            string file_name = Path.GetFileName(file_path);
+
+            if (past_files.Contains(file_path))
+            {
+                throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ImportError, this, $"Circular import in '{calling_path}' trying to import '{file_path}'");
+            }
+            else if (past_file_names.Contains(file_name))
+            {
+                throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ImportError, this, $"Error importing '{file_path}' - name already used");
+            }
+
+            past_files.Add(file_path);
+            past_file_names.Add(file_name);
+
+            SymbolTables.Add(new SymbolTable());
+            int current_symbol_table = SymbolTables.Count - 1;
+
+            file_names.Add(file_name, current_symbol_table); // -1 index denotes table name
+
+            string file_string;
+
+             file_string = ProcessFileString(File.ReadAllText(file_path));
+                
 
             string[] file_split = file_string.Split(';');
             if (file_split.Length > 0 && file_split[file_split.Length - 1] == string.Empty)
@@ -181,15 +189,15 @@ namespace ProgrammingLanguage
             List<int> completed_lines = new List<int>();
 
             for (int pass = -1; pass <= 3; pass++) {
-                line_no[line_no.Count - 1] = -1;
+                LineNo[LineNo.Count - 1] = -1;
                 int meta_lines_passed = 0;
 
-                while (line_no[line_no.Count - 1] < file_split.Length - 1) 
+                while (LineNo[LineNo.Count - 1] < file_split.Length - 1) 
                 {
-                    line_no[line_no.Count - 1]++;
+                    LineNo[LineNo.Count - 1]++;
 
-                    if (completed_lines.Contains(line_no[line_no.Count - 1])) { meta_lines_passed++; continue; }
-                    string[] line = file_split[line_no[line_no.Count - 1]].Split('|');
+                    if (completed_lines.Contains(LineNo[LineNo.Count - 1])) { meta_lines_passed++; continue; }
+                    string[] line = file_split[LineNo[LineNo.Count - 1]].Split('|');
                     string command = line[0];
 
                     // Meta count phase
@@ -209,7 +217,7 @@ namespace ProgrammingLanguage
                             }
                             int tableID = ProcessFile(line[1], file_path);
                             TempFileNames.Add(Path.GetFileNameWithoutExtension(line[1]), tableID);
-                            completed_lines.Add(line_no[line_no.Count - 1]);
+                            completed_lines.Add(LineNo[LineNo.Count - 1]);
                         }
                         else { break; }
                     }
@@ -227,7 +235,7 @@ namespace ProgrammingLanguage
                             try { SymbolTables[current_symbol_table].UnpackedObjects.Add(new Argument(line[2], null, 0, null).Value); } 
                             catch (FormatException) { throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Variable value incorrectly formatted");  }
                             CheckName(line[1]);
-                            completed_lines.Add(line_no[line_no.Count - 1]);
+                            completed_lines.Add(LineNo[LineNo.Count - 1]);
                         }
                         else if (command == "arr")
                         {
@@ -259,7 +267,7 @@ namespace ProgrammingLanguage
                                 }
                             }
                             CheckName(line[1]);
-                            completed_lines.Add(line_no[line_no.Count - 1]);
+                            completed_lines.Add(LineNo[LineNo.Count - 1]);
                         }
                         else {
                             break;
@@ -269,17 +277,17 @@ namespace ProgrammingLanguage
                     else if (pass == 2)
                     {
                         if (command == "import") throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Import commands must be at the top of the file");
-                        else if (command == "let" || command == "arr") throw new ProcessingException($"Error processing '{file_path}' [{line_no[line_no.Count - 1] + 1} - Variable declatarions must be at the top of the file below imports]");
+                        else if (command == "let" || command == "arr") throw new ProcessingException($"Error processing '{file_path}' [{LineNo[LineNo.Count - 1] + 1} - Variable declatarions must be at the top of the file below imports]");
                         else if (command == "tag")
                         {
                             if (SymbolTables[current_symbol_table].ContainsName(line[1]))
                             {
-                                throw new ProcessingException($"Error processing '{file_path}' - Name '{line[1]}' already exists [{line_no[line_no.Count - 1] + 1}]");
+                                throw new ProcessingException($"Error processing '{file_path}' - Name '{line[1]}' already exists [{LineNo[LineNo.Count - 1] + 1}]");
                             }
-                            SymbolTables[current_symbol_table].TempSymbolNames[line[1]] = line_no[line_no.Count - 1] - meta_lines_passed;
+                            SymbolTables[current_symbol_table].TempSymbolNames[line[1]] = LineNo[LineNo.Count - 1] - meta_lines_passed;
                             meta_lines_passed++;
                             CheckTag(line[1]);
-                            completed_lines.Add(line_no[line_no.Count - 1]);
+                            completed_lines.Add(LineNo[LineNo.Count - 1]);
                         }
                     }
                     // Generic phase
@@ -289,9 +297,9 @@ namespace ProgrammingLanguage
                         else if (command == "let" || command == "arr") throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, "Variable declatarions must be at the top of the file below imports");
                         else 
                         {
-                            if (!SymbolNames.ContainsKey(command)) throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, $"Symbol '{command}' not found");
+                            if (!symbol_names.ContainsKey(command)) throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, $"Symbol '{command}' not found");
 
-                            Symbol symbol = (Symbol)(Activator.CreateInstance(SymbolNames[command]) ?? throw new NullReferenceException());
+                            Symbol symbol = (Symbol)(Activator.CreateInstance(symbol_names[command]) ?? throw new NullReferenceException());
                             Argument[] arguments = new Argument[line.Length-1];
 
                             for (int i = 0; i < arguments.Length; i++)
@@ -308,12 +316,10 @@ namespace ProgrammingLanguage
                             
                             string? error = symbol.Build(arguments);
                             if (error is not null) throw ProcessingExceptionBuilder.Build(ProcessingExceptionType.ProcessingError, this, $"Error processing symbol {command}: {error}");
-                            SymbolTables[current_symbol_table].Symbols[line_no[line_no.Count - 1] - meta_lines_passed] = symbol;
+                            SymbolTables[current_symbol_table].Symbols[LineNo[LineNo.Count - 1] - meta_lines_passed] = symbol;
                         }
                     }
                 }
-
-
 
                 if (pass == -1)
                 {
@@ -321,8 +327,8 @@ namespace ProgrammingLanguage
                 }
             }
 
-            call_stack.RemoveAt(call_stack.Count-1);
-            line_no.RemoveAt(line_no.Count-1);
+            CallStack.RemoveAt(CallStack.Count-1);
+            LineNo.RemoveAt(LineNo.Count-1);
             return current_symbol_table;
         }
     }

@@ -73,6 +73,7 @@
                 Value = 0;
                 return;
             }
+            // Literal string
             if (input[0] == '@')
             {
                 symbolTables = null;
@@ -121,49 +122,53 @@
                 input = temp_input;
             }
 
-            if (symbolTables is not null && symbolTables[current_table].TempObjectNames.ContainsKey(input))
+            // Object
+            if (symbolTables is not null && (symbolTables[current_table].TempObjectNames?.ContainsKey(input) ?? false))
             {
                 ArgumentType = ArgType.Object;
                 EvalueType = EvalType.Variable;
-                Value = symbolTables[current_table].TempObjectNames[input];
+                Value = symbolTables[current_table].TempObjectNames?[input] ?? -1;
             }
-            else if (symbolTables is not null && symbolTables[current_table].TempSymbolNames.ContainsKey(input))
+            // Symbol
+            else if (symbolTables is not null && (symbolTables[current_table].TempSymbolNames?.ContainsKey(input) ?? false))
             {
                 ArgumentType = ArgType.Symbol;
                 EvalueType = EvalType.Symbol;
-                Value = symbolTables[current_table].TempSymbolNames[input];
+                Value = symbolTables[current_table].TempSymbolNames?[input] ?? -1;
             }
-            else if (symbolTables is not null && symbolTables[current_table].TempArrayNames.ContainsKey(input))
+            // Array
+            else if (symbolTables is not null && (symbolTables[current_table].TempArrayNames?.ContainsKey(input) ?? false))
             {
                 ArgumentType = ArgType.Array;
                 EvalueType = EvalType.ArrayVariable;
-                var value_tuple = symbolTables[current_table].TempArrayNames[input];
+                var value_tuple = symbolTables[current_table].TempArrayNames?[input] ?? new Tuple<int, int>(-1, -1);
                 Value = value_tuple.Item1;
                 Value2 = value_tuple.Item2;
             }
+            // Array item or symbol
             else if (symbolTables is not null && file_names is not null && input.Contains('.'))
             {
                 string[] path = input.Split('.');
 
-                if (symbolTables[current_table].TempArrayNames.ContainsKey(path[0]))
+                if (symbolTables[current_table].TempArrayNames?.ContainsKey(path[0]) ?? false)
                 {
-                    if (symbolTables[current_table].TempObjectNames.ContainsKey(path[1]))
+                    if (symbolTables[current_table].TempObjectNames?.ContainsKey(path[1]) ?? false)
                     {
                         ArgumentType = ArgType.VariableArrayReference;
                         EvalueType = EvalType.Variable;
-                        Value = symbolTables[current_table].TempArrayNames[path[0]].Item1;
-                        Value2 = symbolTables[current_table].TempObjectNames[path[1]];
+                        Value = symbolTables[current_table].TempArrayNames?[path[0]].Item1 ?? -1;
+                        Value2 = symbolTables[current_table].TempObjectNames?[path[1]] ?? -1;
                     }
                     else if (path[1] == "length") {
                         ArgumentType = ArgType.Constant;
                         EvalueType = EvalType.Value;
-                        Value = symbolTables[current_table].TempArrayNames[path[0]].Item2;
+                        Value = symbolTables[current_table].TempArrayNames?[path[0]]?.Item2 ?? -1;
                     }
                     else
                     {
                         ArgumentType = ArgType.Object;
                         EvalueType = EvalType.Variable;
-                        Value = symbolTables[current_table].TempArrayNames[path[0]].Item1 + int.Parse(path[1]);
+                        Value = symbolTables[current_table].TempArrayNames?[path[0]]?.Item1 ?? -1 + int.Parse(path[1]);
                     }
                 }
                 else
@@ -176,7 +181,7 @@
                     {
                         try
                         {
-                            Value = symbolTables[current_table].TempSymbolNames[path[0]];
+                            Value = symbolTables[current_table].TempSymbolNames?[path[0]] ?? -1;
                             if (path[1] == "push") Value3 = 1;
                             ArgumentType = ArgType.Symbol;
                             EvalueType = EvalType.Symbol;
@@ -188,7 +193,7 @@
                         }
                     }
 
-                    if (path[1] == "start" && !symbolTables[Value2].TempSymbolNames.ContainsKey("start"))
+                    if (path[1] == "start" && !(symbolTables[Value2].TempSymbolNames?.ContainsKey("start") ?? false))
                     {
                         Value = 0;
                     }
@@ -196,7 +201,7 @@
                     {
                         try
                         {
-                            Value = symbolTables[Value2].TempSymbolNames[path[1]];
+                            Value = symbolTables[Value2].TempSymbolNames?[path[1]] ?? -1;
                         }
                         catch (KeyNotFoundException)
                         {
@@ -210,6 +215,7 @@
                     EvalueType = EvalType.Symbol;
                 } 
             }
+            // Constant
             else
             {
                 if (!int.TryParse(input, out Value))
@@ -316,6 +322,7 @@
                     throw new FormatException($"Arg {arg.ArgumentType} can't be treated as arr reference");
             }
         }
+
         public static SymbolRef EvaluateSymbolArg(Argument arg, Interpreter interpreter)
         {
             switch (arg.ArgumentType)
